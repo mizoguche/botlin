@@ -9,12 +9,11 @@ interface BotlinFeatureFactory<out C : Any, out F : BotlinFeature> {
 }
 
 interface BotlinSubscriber<in T> {
-    fun onPublish(event: T)
+    fun onPublishing(event: T)
 }
 
-fun <T> Publish(p: (T) -> Unit) = object : BotlinSubscriber<T> {
-    override fun onPublish(event: T) {
+fun <T> publishing(p: (T) -> Unit) = object : BotlinSubscriber<T> {
+    override fun onPublishing(event: T) {
         p(event)
     }
 }
-

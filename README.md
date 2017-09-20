@@ -11,7 +11,7 @@ fun main(args: Array<String>) {
             token = System.getenv("SLACK_TOKEN")
         }
 
-        on<SlackMessageEvent>(Publish {
+        on<SlackMessageEvent>(publishing {
             if (it.messageContent == "PING") {
                 it.session.sendMessage(it.channel, "PONG")
             }

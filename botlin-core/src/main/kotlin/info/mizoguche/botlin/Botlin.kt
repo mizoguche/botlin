@@ -20,7 +20,7 @@ class Botlin {
         subscriptions[event.javaClass]?.forEach {
             if (event is T) {
                 val subscriber = it as? BotlinSubscriber<T> ?: return@forEach
-                subscriber.onPublish(event)
+                subscriber.onPublishing(event)
             }
         }
     }
