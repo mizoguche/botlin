@@ -3,6 +3,7 @@ buildscript {
 
     repositories {
         mavenCentral()
+        jcenter()
     }
 
     dependencies {
@@ -13,6 +14,16 @@ buildscript {
     }
 }
 
+plugins {
+    id "io.gitlab.arturbosch.detekt" version "1.0.0.M11"
+}
+
+detekt {
+    version = "1.0.0.M11"
+    input = "$input/botlin-core/src/main/kotlin"
+    config = "$input/../../../../detekt.yml"
+    filters = ".*test.*,.*/resources/.*,.*/tmp/.*"
+}
 
 allprojects {
     repositories {
