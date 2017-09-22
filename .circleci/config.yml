@@ -1,0 +1,43 @@
+version: 2
+
+jobs:
+  build:
+    working_directory: ~/blanda-api
+
+    docker:
+      - image: mizoguche/docker-java-aws-cli
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: botlin-{{ checksum "build.gradle" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+
+      - run:
+          name: Run Lint
+          command: ./gradlew ktlint
+
+      - run:
+          name: Run Static Analysis
+          command: ./gradlew detektCheck
+
+#      - run:
+#          name: Run Tests
+#          command: ./gradlew test
+
+      - save_cache:
+          key: botlin-{{ checksum "build.gradle" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+          paths:
+            - "~/.gradle/wrapper/dists/gradle-4.0.1"
+            - "~/.gradle/caches/modules-2"
+            - "~/.gradle/buildOutputCleanup"
+
+      - run:
+          name: Build
+          command: ./gradlew build
+
+#      - deploy:
+#          command: |
+#            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+#            # TODO: Deploy to jCenter
+#            fi
