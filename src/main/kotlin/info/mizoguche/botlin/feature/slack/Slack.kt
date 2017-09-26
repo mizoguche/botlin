@@ -1,4 +1,4 @@
-package info.mizoguche.botlin.slack
+package info.mizoguche.botlin.feature.slack
 
 import com.ullink.slack.simpleslackapi.SlackSession
 import com.ullink.slack.simpleslackapi.events.SlackMessagePosted
