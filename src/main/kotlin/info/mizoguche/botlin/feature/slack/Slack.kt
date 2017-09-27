@@ -10,8 +10,15 @@ import info.mizoguche.botlin.BotlinFeatureFactory
 class SlackMessageEvent(private val event: SlackMessagePosted, val session: SlackSession) : SlackMessagePosted by event
 
 class Slack(private val configuration: Slack.Configuration) : BotlinFeature {
+    var slackSession: SlackSession? = null
+
+    override fun stop(botlin: Botlin) {
+        slackSession?.disconnect()
+    }
+
     override fun start(botlin: Botlin) {
         val session = SlackSessionFactory.createWebSocketSlackSession(configuration.token)
+        slackSession = session
         session.connect()
         session.addMessagePostedListener { event, sess ->
             if (event.sender.id != session.sessionPersona().id) {

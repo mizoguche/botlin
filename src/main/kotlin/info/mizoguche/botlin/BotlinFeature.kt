@@ -2,6 +2,7 @@ package info.mizoguche.botlin
 
 interface BotlinFeature {
     fun start(botlin: Botlin)
+    fun stop(botlin: Botlin)
 }
 
 interface BotlinFeatureFactory<out C : Any, out F : BotlinFeature> {

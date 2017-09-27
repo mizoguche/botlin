@@ -26,7 +26,14 @@ class Botlin {
     }
 
     fun start() {
-        features.forEach { it.start(this) }
+        try {
+            features.forEach { it.start(this) }
+            while (true) {
+                Thread.sleep(1000)
+            }
+        } finally {
+            features.forEach { it.stop(this) }
+        }
     }
 }
 
