@@ -6,11 +6,15 @@ import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory
 import info.mizoguche.botlin.Botlin
 import info.mizoguche.botlin.BotlinFeature
 import info.mizoguche.botlin.BotlinFeatureFactory
+import info.mizoguche.botlin.BotlinFeatureId
 
 class SlackMessageEvent(private val event: SlackMessagePosted, val session: SlackSession) : SlackMessagePosted by event
 
 class Slack(private val configuration: Slack.Configuration) : BotlinFeature {
-    var slackSession: SlackSession? = null
+    override val id: BotlinFeatureId
+        get() = BotlinFeatureId("Slack")
+
+    private var slackSession: SlackSession? = null
 
     override fun stop(botlin: Botlin) {
         slackSession?.disconnect()
