@@ -55,6 +55,8 @@ dependencies {
     compile 'org.glassfish.tyrus.bundles:tyrus-standalone-client:1.13.1'
     compile 'com.github.Ullink:simple-slack-api:1.0.0'
 
+    compile 'redis.clients:jedis:2.9.0'
+
     ktlint 'com.github.shyiko:ktlint:0.8.1'
 }
 
