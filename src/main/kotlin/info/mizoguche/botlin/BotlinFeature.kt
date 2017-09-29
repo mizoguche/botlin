@@ -11,7 +11,7 @@ interface BotlinFeature {
 }
 
 interface BotlinFeatureFactory<out C : Any, out F : BotlinFeature> {
-    fun create(configure: C.() -> Unit): F
+    fun create(configure: C.() -> Unit = {}): F
 }
 
 interface BotlinSubscriber<in T> {
