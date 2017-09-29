@@ -4,7 +4,7 @@ class Botlin {
     private val features = mutableListOf<BotlinFeature>()
     val subscriptions = mutableMapOf<Class<*>, MutableSet<Any>>()
 
-    fun <C : Any, F : BotlinFeature, G : BotlinFeatureFactory<C, F>> install(factory: G, configure: C.() -> Unit): F {
+    fun <C : Any, F : BotlinFeature, G : BotlinFeatureFactory<C, F>> install(factory: G, configure: C.() -> Unit = {}): F {
         val feature = factory.create(configure)
         features.add(feature)
         return feature
