@@ -8,6 +8,7 @@ import info.mizoguche.botlin.publishing
 import redis.clients.jedis.Jedis
 
 data class BotlinStoreSetRequest(val featureId: BotlinFeatureId, val value: String)
+data class BotlinStoreGetRequest(val featureId: BotlinFeatureId, val callback: (String) -> Unit)
 
 class Redis(private val configuration: Redis.Configuration) : BotlinFeature {
     override val id: BotlinFeatureId
@@ -27,7 +28,13 @@ class Redis(private val configuration: Redis.Configuration) : BotlinFeature {
 
         botlin.on<BotlinStoreSetRequest>(publishing {
             session.set(it.featureId.value, it.value)
-            println("key: ${it.featureId.value}, val: ${it.value}")
+        })
+
+        botlin.on<BotlinStoreGetRequest>(publishing {
+            val value = session.get(it.featureId.value)
+            if (value != null) {
+                it.callback(value)
+            }
         })
     }
 
