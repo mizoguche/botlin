@@ -27,9 +27,13 @@ class Command(private val configuration: Configuration) : BotlinFeature {
     override val id: BotlinFeatureId
         get() = BotlinFeatureId("Command")
 
-    override fun stop(botlin: Botlin) { }
+    override fun stop(botlin: Botlin) {
+        println("Stop Command feature")
+    }
 
     override fun start(botlin: Botlin) {
+        println("Start Command feature")
+
         botlin.on<BotlinMessageEvent>(publishing {
             if (it.isMention) {
                 botlin.publish<BotlinCommand>(BotlinCommand(it))
@@ -47,67 +51,3 @@ class Command(private val configuration: Configuration) : BotlinFeature {
     }
 }
 
-data class CommandFeatureRegister(val feature: CommandFeature)
-
-abstract class CommandFeature : BotlinFeature {
-    abstract val command: String
-    abstract val description: String
-    abstract val usage: String
-
-    override fun start(botlin: Botlin) {
-        onStart(botlin)
-
-        botlin.publish<CommandFeatureRegister>(CommandFeatureRegister(this))
-
-        botlin.on<BotlinCommand>(publishing {
-            if (it.command == command) {
-                onCommandPublishing(it)
-            }
-        })
-    }
-
-    override fun stop(botlin: Botlin) {
-        onStop(botlin)
-    }
-
-    abstract fun onCommandPublishing(command: BotlinCommand)
-    abstract fun onStart(botlin: Botlin)
-    abstract fun onStop(botlin: Botlin)
-}
-
-class CommandHelp(conf: Configuration) : CommandFeature() {
-    private val help = StringBuilder()
-
-    override fun onStart(botlin: Botlin) {
-        botlin.on<CommandFeatureRegister>(publishing {
-            help.appendln("${it.feature.command}: ${it.feature.description}")
-            help.appendln("Usage".prependIndent("  "))
-            help.appendln("${it.feature.usage.prependIndent()}")
-        })
-    }
-
-    override fun onStop(botlin: Botlin) {
-    }
-
-    override fun onCommandPublishing(command: BotlinCommand) {
-        command.msgEvent.reply("```\n$help```")
-    }
-
-    override val command: String
-        get() = "help"
-    override val description: String
-        get() = "show helps of installed commands"
-    override val usage: String
-        get() = "help - display this message"
-    override val id: BotlinFeatureId
-        get() = BotlinFeatureId("Help")
-
-    class Configuration
-
-    companion object Factory : BotlinFeatureFactory<Configuration, CommandHelp> {
-        override fun create(configure: Configuration.() -> Unit): CommandHelp {
-            val conf = Configuration().apply(configure)
-            return CommandHelp(conf)
-        }
-    }
-}
