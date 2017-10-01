@@ -43,14 +43,17 @@ class CommandHelp(conf: Configuration) : CommandFeature() {
 
     override fun onStart(botlin: Botlin) {
         botlin.on<CommandFeatureRegister>(publishing {
-            help.appendln("${it.feature.command}: ${it.feature.description}")
-            help.appendln("Usage".prependIndent("  "))
-            help.appendln("${it.feature.usage.prependIndent()}")
+            help.append("""
+                |${it.feature.command}: ${it.feature.description}
+                |${it.feature.usage.prependIndent()}
+                |
+                |
+                """.trimMargin())
         })
     }
 
     override fun onCommandPublishing(command: BotlinCommand) {
-        command.msgEvent.reply("```\n$help```")
+        command.msgEvent.reply("```\n${help.replace(Regex.fromLiteral("<botlin>"), "${command.msgEvent.session.mentionPrefix}").trimEnd('\n')}```")
     }
 
     override val command: String
@@ -58,7 +61,10 @@ class CommandHelp(conf: Configuration) : CommandFeature() {
     override val description: String
         get() = "show helps of installed commands"
     override val usage: String
-        get() = "help - display this message"
+        get() = """
+            |<botlin> help
+            |    display this message
+            """.trimMargin()
     override val id: BotlinFeatureId
         get() = BotlinFeatureId("Help")
 

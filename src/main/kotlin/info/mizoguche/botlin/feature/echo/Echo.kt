@@ -11,7 +11,10 @@ class Echo : CommandFeature() {
     override val description: String
         get() = "echo"
     override val usage: String
-        get() = "echo hello"
+        get() = """
+            |<botlin> echo hello
+            |    post message "hello"
+            """.trimMargin()
 
     override fun onCommandPublishing(command: BotlinCommand) {
         command.msgEvent.reply(command.args)

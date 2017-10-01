@@ -8,6 +8,7 @@ import info.mizoguche.botlin.BotlinFeatureFactory
 import info.mizoguche.botlin.BotlinFeatureId
 import info.mizoguche.botlin.BotlinMessageEvent
 import info.mizoguche.botlin.BotlinMessageSender
+import info.mizoguche.botlin.BotlinMessageSession
 
 class Slack(private val configuration: Slack.Configuration) : BotlinFeature {
     override val id: BotlinFeatureId
@@ -32,6 +33,10 @@ class Slack(private val configuration: Slack.Configuration) : BotlinFeature {
                                 senderId = event.sender.id,
                                 senderUserName = event.sender.userName,
                                 senderDisplayName = event.sender.realName
+                        ),
+                        session = BotlinMessageSession(
+                                mentionChar = "@",
+                                botUsername = sess.sessionPersona().userName
                         ),
                         reply = { session.sendMessage(event.channel, it) }
                 )
