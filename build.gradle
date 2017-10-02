@@ -57,6 +57,8 @@ dependencies {
 
     compile 'redis.clients:jedis:2.9.0'
 
+    compile group: 'it.sauronsoftware.cron4j', name: 'cron4j', version: '2.2.5'
+
     ktlint 'com.github.shyiko:ktlint:0.8.1'
 }
 
