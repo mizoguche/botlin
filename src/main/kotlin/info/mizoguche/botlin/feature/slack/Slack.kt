@@ -27,6 +27,7 @@ class Slack(private val configuration: Slack.Configuration) : BotlinFeature {
         session.addMessagePostedListener { event, sess ->
             if (event.sender.id != session.sessionPersona().id) {
                 val e = BotlinMessageEvent(
+                        channelId = event.channel.id,
                         message = event.messageContent.replace("<@${session.sessionPersona().id}> ", ""),
                         rawMessage = event.messageContent,
                         sender = BotlinMessageSender(

@@ -15,6 +15,7 @@ data class BotlinMessageSession(
 }
 
 data class BotlinMessageEvent(
+        val channelId: String,
         val message: String,
         val rawMessage: String,
         val sender: BotlinMessageSender,

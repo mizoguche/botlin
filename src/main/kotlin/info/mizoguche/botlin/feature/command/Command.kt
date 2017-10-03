@@ -7,7 +7,7 @@ import info.mizoguche.botlin.BotlinFeatureId
 import info.mizoguche.botlin.BotlinMessageEvent
 import info.mizoguche.botlin.publishing
 
-class BotlinCommand(val msgEvent: BotlinMessageEvent) {
+class BotlinCommand(val botlin: Botlin, val msgEvent: BotlinMessageEvent) {
     val command: String
         get() = if (msgEvent.message.indexOf(" ") > -1) {
             msgEvent.message.split(" ")[0]
@@ -36,7 +36,7 @@ class Command(private val configuration: Configuration) : BotlinFeature {
 
         botlin.on<BotlinMessageEvent>(publishing {
             if (it.isMention) {
-                botlin.publish<BotlinCommand>(BotlinCommand(it))
+                botlin.publish<BotlinCommand>(BotlinCommand(botlin, it))
             }
         })
     }
