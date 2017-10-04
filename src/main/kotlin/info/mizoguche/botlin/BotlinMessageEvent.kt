@@ -24,3 +24,8 @@ data class BotlinMessageEvent(
     val isMention: Boolean
         get() = message != rawMessage
 }
+
+data class BotlinMessageRequest(
+        val channelId: String,
+        val message: String
+)

@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import info.mizoguche.botlin.Botlin
 import info.mizoguche.botlin.BotlinFeatureFactory
 import info.mizoguche.botlin.BotlinFeatureId
+import info.mizoguche.botlin.BotlinMessageRequest
 import info.mizoguche.botlin.feature.command.BotlinCommand
 import info.mizoguche.botlin.feature.command.CommandFeature
 import it.sauronsoftware.cron4j.Scheduler
@@ -55,7 +56,7 @@ class Cron : CommandFeature() {
         val matcher = ADD_COMMAND_PATTERN.matcher(command.args)
         if (matcher.matches()) {
             val cron = matcher.group(1)
-            val com = matcher.group(2)
+            val com = "${command.msgEvent.session.mentionPrefix} ${matcher.group(2)}"
             return Schedule(id, command.msgEvent.channelId, cron, com)
         }
         throw IllegalArgumentException("invalid args: ${command.args}")
@@ -68,6 +69,17 @@ class Cron : CommandFeature() {
 
             // TODO: Store shcedule
             println(json)
+            val scheduler = Scheduler().apply {
+                this.schedule(schedule.cron, object : Runnable {
+                    override fun run() {
+                        command.botlin.publish<BotlinMessageRequest>(BotlinMessageRequest(
+                                channelId = schedule.channelId,
+                                message = schedule.command
+                        ))
+                    }
+                })
+            }
+            scheduler.start()
 
             command.msgEvent.reply("schedule created.")
         } catch (e: IllegalArgumentException) {
