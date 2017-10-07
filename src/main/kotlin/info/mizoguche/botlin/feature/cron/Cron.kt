@@ -64,7 +64,7 @@ class Cron : CommandFeature() {
                 val setReq = BotlinStoreSetRequest(id, json)
                 command.botlin.publish<BotlinStoreSetRequest>(setReq)
                 startSchedule(command.botlin, schedule)
-                command.msgEvent.reply("schedule created.")
+                command.msgEvent.reply("Created schedule.")
             }
             command.botlin.publish<BotlinStoreGetRequest>(storeGetReq)
         }
@@ -86,23 +86,38 @@ class Cron : CommandFeature() {
         }
     }
 
+    private class RemoveCommand(val id: BotlinFeatureId, val command: BotlinCommand, val scheduleId: Int) : Subcommand {
+        override fun execute() {
+            val storeGetReq = BotlinStoreGetRequest(id) {
+                val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
+                schedules.schedules.removeIf { it.id == scheduleId }
+                stopSchedule(scheduleId)
+                val json = gson.toJson(schedules)
+                val setReq = BotlinStoreSetRequest(id, json)
+                command.botlin.publish<BotlinStoreSetRequest>(setReq)
+                command.msgEvent.reply("Removed schedule.")
+            }
+            command.botlin.publish<BotlinStoreGetRequest>(storeGetReq)
+        }
+    }
+
     private fun parse(command: BotlinCommand): Subcommand {
         if (command.args == "list") {
             return ListCommand(id, command)
         }
 
-        val matcher = ADD_COMMAND_PATTERN.matcher(command.args)
-        if (matcher.matches()) {
-            val cron = matcher.group(1)
-            val com = "${command.msgEvent.session.mentionPrefix} ${matcher.group(2)}"
+        val matcherAdd = ADD_COMMAND_PATTERN.matcher(command.args)
+        if (matcherAdd.matches()) {
+            val cron = matcherAdd.group(1)
+            val com = "${command.msgEvent.session.mentionPrefix} ${matcherAdd.group(2)}"
             val schedule = Schedule(createScheduleId(), command.msgEvent.channelId, cron, com)
             return AddCommand(id, command, schedule)
         }
 
         val matcherRemove = REMOVE_COMMAND_PATTERN.matcher(command.args)
-        if (matcher.matches()) {
-            val id = matcher.group(1)
-
+        if (matcherRemove.matches()) {
+            val scheduleId = matcherRemove.group(1).toInt()
+            return RemoveCommand(id, command, scheduleId)
         }
 
         throw IllegalArgumentException("invalid args: ${command.args}")
@@ -146,6 +161,8 @@ class Cron : CommandFeature() {
     }
 }
 
+private val startedSchedules = mutableMapOf<Int, Scheduler>()
+
 private fun startSchedule(botlin: Botlin, schedule: Schedule) {
     val scheduler = Scheduler().apply {
         schedule(schedule.cron) {
@@ -156,4 +173,10 @@ private fun startSchedule(botlin: Botlin, schedule: Schedule) {
         }
     }
     scheduler.start()
+    startedSchedules.put(schedule.id, scheduler)
+}
+
+private fun stopSchedule(scheduleId: Int) {
+    val scheduler = startedSchedules[scheduleId] ?: return
+    scheduler.stop()
 }
