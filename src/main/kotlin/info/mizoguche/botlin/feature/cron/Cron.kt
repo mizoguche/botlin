@@ -49,8 +49,21 @@ class Cron : CommandFeature() {
     }
 
 
-    data class Schedule(val id: Int, val channelId: String, val cron: String, val command: String)
-    data class Schedules(val schedules: MutableList<Schedule>)
+    data class Schedule(val id: Int, val channelId: String, val cron: String, val command: String) {
+        override fun toString(): String {
+            return "${id.toString().padStart(4, ' ')}: \"$cron\" $command"
+        }
+    }
+
+    data class Schedules(val schedules: MutableList<Schedule>) {
+        override fun toString(): String {
+            if (schedules.count() == 0) {
+                return "```\nNo schedules.\n```"
+            }
+            return "```\n${schedules.joinToString("\n")}\n```"
+        }
+    }
+
     private interface Subcommand {
         fun execute()
     }
@@ -64,7 +77,12 @@ class Cron : CommandFeature() {
                 val setReq = BotlinStoreSetRequest(id, json)
                 command.botlin.publish<BotlinStoreSetRequest>(setReq)
                 startSchedule(command.botlin, schedule)
-                command.msgEvent.reply("Created schedule.")
+                command.msgEvent.reply("""
+                    |Created schedule.
+                    |
+                    |Current schedules:
+                    |$schedules
+                    """.trimMargin())
             }
             command.botlin.publish<BotlinStoreGetRequest>(storeGetReq)
         }
@@ -74,13 +92,7 @@ class Cron : CommandFeature() {
         override fun execute() {
             val storeGetReq = BotlinStoreGetRequest(id) {
                 val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
-                val list = schedules.schedules.joinToString("\n") {
-                    "${it.id.toString().padStart(4, ' ')}: \"${it.cron}\" ${it.command}"
-                }
-                command.msgEvent.reply("""
-                |```
-                |$list
-                |```""".trimMargin())
+                command.msgEvent.reply(schedules.toString())
             }
             command.botlin.publish<BotlinStoreGetRequest>(storeGetReq)
         }
@@ -95,7 +107,12 @@ class Cron : CommandFeature() {
                 val json = gson.toJson(schedules)
                 val setReq = BotlinStoreSetRequest(id, json)
                 command.botlin.publish<BotlinStoreSetRequest>(setReq)
-                command.msgEvent.reply("Removed schedule.")
+                command.msgEvent.reply("""
+                    |Removed schedule.
+                    |
+                    |Current schedules:
+                    |$schedules
+                    """.trimMargin())
             }
             command.botlin.publish<BotlinStoreGetRequest>(storeGetReq)
         }
