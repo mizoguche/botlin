@@ -7,6 +7,7 @@ import info.mizoguche.botlin.BotlinFeatureId
 import info.mizoguche.botlin.BotlinMessageRequest
 import info.mizoguche.botlin.feature.command.BotlinCommand
 import info.mizoguche.botlin.feature.command.CommandFeature
+import info.mizoguche.botlin.feature.cron.Cron.Schedule
 import info.mizoguche.botlin.feature.redis.BotlinStoreGetRequest
 import info.mizoguche.botlin.feature.redis.BotlinStoreSetRequest
 import it.sauronsoftware.cron4j.Scheduler
@@ -47,83 +48,79 @@ class Cron : CommandFeature() {
         return idCandidate
     }
 
-    private val gson = Gson()
 
-    private data class Schedule(val id: Int, val channelId: String, val cron: String, val command: String)
-    private data class Schedules(val schedules: MutableList<Schedule>)
+    data class Schedule(val id: Int, val channelId: String, val cron: String, val command: String)
+    data class Schedules(val schedules: MutableList<Schedule>)
+    private interface Subcommand {
+        fun execute()
+    }
 
-    private fun parse(command: BotlinCommand) {
+    private class AddCommand(val id: BotlinFeatureId, val command: BotlinCommand, val schedule: Schedule) : Subcommand {
+        override fun execute() {
+            val storeGetReq = BotlinStoreGetRequest(id) {
+                val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
+                schedules.schedules.add(schedule)
+                val json = gson.toJson(schedules)
+                val setReq = BotlinStoreSetRequest(id, json)
+                command.botlin.publish<BotlinStoreSetRequest>(setReq)
+                startSchedule(command.botlin, schedule)
+                command.msgEvent.reply("schedule created.")
+            }
+            command.botlin.publish<BotlinStoreGetRequest>(storeGetReq)
+        }
+    }
+
+    private class ListCommand(val id: BotlinFeatureId, val command: BotlinCommand) : Subcommand {
+        override fun execute() {
+            val storeGetReq = BotlinStoreGetRequest(id) {
+                val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
+                val list = schedules.schedules.joinToString("\n") {
+                    "${it.id.toString().padStart(4, ' ')}: \"${it.cron}\" ${it.command}"
+                }
+                command.msgEvent.reply("""
+                |```
+                |$list
+                |```""".trimMargin())
+            }
+            command.botlin.publish<BotlinStoreGetRequest>(storeGetReq)
+        }
+    }
+
+    private fun parse(command: BotlinCommand): Subcommand {
         if (command.args == "list") {
-            executeListSchedule(command)
-            return
+            return ListCommand(id, command)
         }
 
         val matcher = ADD_COMMAND_PATTERN.matcher(command.args)
         if (matcher.matches()) {
             val cron = matcher.group(1)
             val com = "${command.msgEvent.session.mentionPrefix} ${matcher.group(2)}"
-            val id = createScheduleId()
-            val schedule = Schedule(id, command.msgEvent.channelId, cron, com)
-            executeAddSchedule(command.botlin, schedule)
-            command.msgEvent.reply("schedule created.")
-            return
+            val schedule = Schedule(createScheduleId(), command.msgEvent.channelId, cron, com)
+            return AddCommand(id, command, schedule)
+        }
+
+        val matcherRemove = REMOVE_COMMAND_PATTERN.matcher(command.args)
+        if (matcher.matches()) {
+            val id = matcher.group(1)
+
         }
 
         throw IllegalArgumentException("invalid args: ${command.args}")
     }
 
-    private fun executeListSchedule(command: BotlinCommand) {
-        val storeGetReq = BotlinStoreGetRequest(id) {
-            val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
-            val list = schedules.schedules.map {
-                "${it.id.toString().padStart(4, ' ')}: \"${it.cron}\" ${it.command}"
-            }.joinToString("\n")
-            command.msgEvent.reply("""
-                |```
-                |$list
-                |```""".trimMargin())
-        }
-        command.botlin.publish<BotlinStoreGetRequest>(storeGetReq)
-    }
-
-    private fun executeAddSchedule(botlin: Botlin, schedule: Schedule) {
-        val storeGetReq = BotlinStoreGetRequest(id) {
-            val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
-            schedules.schedules.add(schedule)
-            val json = gson.toJson(schedules)
-            val setReq = BotlinStoreSetRequest(id, json)
-            botlin.publish<BotlinStoreSetRequest>(setReq)
-            startSchedule(botlin, schedule)
-        }
-        botlin.publish<BotlinStoreGetRequest>(storeGetReq)
-    }
-
     override fun onCommandPublishing(command: BotlinCommand) {
         try {
-            val schedule = parse(command)
-            val botlin = command.botlin
+            val subcommand = parse(command)
+            subcommand.execute()
         } catch (e: IllegalArgumentException) {
             command.msgEvent.reply("error: invalid args. confirm cron tab.")
         }
-    }
-
-    private fun startSchedule(botlin: Botlin, schedule: Schedule) {
-        val scheduler = Scheduler().apply {
-            schedule(schedule.cron) {
-                botlin.publish<BotlinMessageRequest>(BotlinMessageRequest(
-                        channelId = schedule.channelId,
-                        message = schedule.command
-                ))
-            }
-        }
-        scheduler.start()
     }
 
     override fun onStart(botlin: Botlin) {
         val storeGetReq = BotlinStoreGetRequest(id) {
             val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
             schedules.schedules.forEach {
-                println(it)
                 startSchedule(botlin, it)
             }
         }
@@ -138,6 +135,8 @@ class Cron : CommandFeature() {
 
     companion object Factory : BotlinFeatureFactory<Configuration, Cron> {
         private val ADD_COMMAND_PATTERN = Pattern.compile("add \"(.+? .+? .+? .+? .+?)\" (.+)")
+        private val REMOVE_COMMAND_PATTERN = Pattern.compile("remove (\\d+?)")
+        private val gson = Gson()
 
         val MAX_SCHEDULES = 10000
 
@@ -145,4 +144,16 @@ class Cron : CommandFeature() {
             return Cron()
         }
     }
+}
+
+private fun startSchedule(botlin: Botlin, schedule: Schedule) {
+    val scheduler = Scheduler().apply {
+        schedule(schedule.cron) {
+            botlin.publish<BotlinMessageRequest>(BotlinMessageRequest(
+                    channelId = schedule.channelId,
+                    message = schedule.command
+            ))
+        }
+    }
+    scheduler.start()
 }
