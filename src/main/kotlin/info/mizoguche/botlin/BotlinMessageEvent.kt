@@ -14,13 +14,13 @@ data class BotlinMessageSession(
         get() = "$mentionChar$botUsername"
 }
 
-data class BotlinMessageEvent(
+abstract class BotlinMessageEvent(
         val channelId: String,
         val message: String,
         val rawMessage: String,
         val sender: BotlinMessageSender,
         val session: BotlinMessageSession,
-        val reply: (String) -> Unit) {
+        val reply: (String) -> Unit) : BotlinEvent<Unit> {
     val isMention: Boolean
         get() = message != rawMessage
 }
