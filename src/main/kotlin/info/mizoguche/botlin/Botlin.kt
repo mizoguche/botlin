@@ -1,5 +1,9 @@
 package info.mizoguche.botlin
 
+interface BotlinEvent<T> {
+    suspend fun execute(): T
+}
+
 class Botlin {
     private val features = mutableListOf<BotlinFeature>()
     val subscriptions = mutableMapOf<Class<*>, MutableSet<Any>>()
@@ -10,13 +14,13 @@ class Botlin {
         return feature
     }
 
-    inline fun <reified T> on(subscriber: BotlinSubscriber<T>) {
+    inline fun <reified T : BotlinEvent<*>> on(subscriber: BotlinSubscriber<T>) {
         val clazz = T::class.java
         subscriptions[clazz]?.add(subscriber) ?: subscriptions.put(clazz, mutableSetOf(subscriber))
     }
 
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T : Any> publish(event: Any) {
+    inline fun <reified T : BotlinEvent<*>> publish(event: Any) {
         subscriptions[event.javaClass]?.forEach {
             if (event is T) {
                 val subscriber = it as? BotlinSubscriber<T> ?: return@forEach
