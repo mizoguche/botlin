@@ -14,7 +14,7 @@ data class BotlinMessageSession(
         get() = "$mentionChar$botUsername"
 }
 
-abstract class BotlinMessageEvent(
+data class BotlinMessageEvent(
         val channelId: String,
         val message: String,
         val rawMessage: String,

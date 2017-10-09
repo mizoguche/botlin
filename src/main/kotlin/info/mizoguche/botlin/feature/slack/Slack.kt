@@ -12,21 +12,6 @@ import info.mizoguche.botlin.BotlinMessageSender
 import info.mizoguche.botlin.BotlinMessageSession
 import info.mizoguche.botlin.publishing
 
-class SlackMessageEvent(
-        channelId: String,
-        message: String,
-        rawMessage: String,
-        sender: BotlinMessageSender,
-        session: BotlinMessageSession,
-        reply: (String) -> Unit)
-    : BotlinMessageEvent(
-        channelId,
-        message,
-        rawMessage,
-        sender,
-        session,
-        reply)
-
 class Slack(
         private val configuration: Slack.Configuration) : BotlinFeature {
     override val id: BotlinFeatureId
@@ -44,7 +29,7 @@ class Slack(
         session.connect()
         session.addMessagePostedListener { event, sess ->
             if (event.sender.id != session.sessionPersona().id) {
-                val e = SlackMessageEvent(
+                val e = BotlinMessageEvent(
                         channelId = event.channel.id,
                         message = event.messageContent.replace("<@${session.sessionPersona().id}> ", ""),
                         rawMessage = event.messageContent,
