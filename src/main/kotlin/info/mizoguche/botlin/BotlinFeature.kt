@@ -12,15 +12,15 @@ interface BotlinFeatureFactory<out C : Any, out F : BotlinFeature> {
     fun create(configure: C.() -> Unit = {}): F
 }
 
-interface BotlinSubscriber<in T, out R> {
+interface BotlinSubscriber<in T> {
     val id: BotlinFeatureId
-    fun onPublishing(event: T): R
+    fun onPublishing(event: T)
 }
 
-fun <T, R> publishing(id: BotlinFeatureId, p: (T) -> R) = object : BotlinSubscriber<T, R> {
+fun <T> publishing(id: BotlinFeatureId, p: (T) -> Unit) = object : BotlinSubscriber<T> {
     override val id = id
 
-    override fun onPublishing(event: T): R {
-        return p(event)
+    override fun onPublishing(event: T) {
+        p(event)
     }
 }

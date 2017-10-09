@@ -41,6 +41,7 @@ repositories {
     maven { url 'https://maven.google.com' }
     maven { url 'https://jitpack.io' }
     maven { url 'https://dl.bintray.com/mizoguche/maven/' }
+    maven { url "http://dl.bintray.com/kotlin/kotlin-eap-1.1" }
 }
 
 configurations {
@@ -60,6 +61,9 @@ dependencies {
     compile group: 'it.sauronsoftware.cron4j', name: 'cron4j', version: '2.2.5'
 
     ktlint 'com.github.shyiko:ktlint:0.8.1'
+
+    def coroutines_version = '0.19.1'
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 }
 
 task ktlint(type: JavaExec) {

@@ -1,7 +1,17 @@
 package info.mizoguche.botlin
 
-interface BotlinEvent<out T> {
-    suspend fun execute(): T
+import kotlinx.coroutines.experimental.async
+
+interface BotlinEvent {
+    val responder: BotlinFeatureId
+}
+
+interface BotlinRequest<out T> {
+    suspend fun execute(): BotlinResponse<T>
+}
+
+interface BotlinResponse<out T> {
+    val result: T
 }
 
 class Botlin {
@@ -14,29 +24,21 @@ class Botlin {
         return feature
     }
 
-    inline fun <reified T : BotlinEvent<*>> on(subscriber: BotlinSubscriber<T, *>) {
+    inline fun <reified T : BotlinEvent> on(subscriber: BotlinSubscriber<T>) {
         val clazz = T::class.java
         subscriptions[clazz]?.add(subscriber) ?: subscriptions.put(clazz, mutableSetOf(subscriber))
     }
 
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T : BotlinEvent<R>, R> publish(event: T): R? {
-        var result: R? = null
-        var responder: BotlinFeatureId? = null
+    inline fun <reified T : BotlinEvent> publish(event: T) {
         subscriptions[event.javaClass]?.forEach {
-            val subscriber = it as? BotlinSubscriber<T, R> ?: return@forEach
-            if (responder == null) {
-                throw IllegalStateException("${subscriber.id} tried to respond $event but already responded by $responder")
-            }
-            responder = subscriber.id
-            result = subscriber.onPublishing(event)
+            val subscriber = it as? BotlinSubscriber<T> ?: return@forEach
+            subscriber.onPublishing(event)
         }
+    }
 
-        if (result == null) {
-            println("no subscribers for $event")
-        }
-
-        return result
+    fun <T> request(request: BotlinRequest<T>): BotlinResponse<T> {
+        return async { request.execute() }.getCompleted()
     }
 
     fun start() {

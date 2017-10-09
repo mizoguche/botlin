@@ -1,9 +1,9 @@
 package info.mizoguche.botlin.feature.slack
 
-import com.ullink.slack.simpleslackapi.SlackChannel
 import com.ullink.slack.simpleslackapi.SlackSession
 import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory
 import info.mizoguche.botlin.Botlin
+import info.mizoguche.botlin.BotlinEventResult
 import info.mizoguche.botlin.BotlinFeature
 import info.mizoguche.botlin.BotlinFeatureFactory
 import info.mizoguche.botlin.BotlinFeatureId
@@ -13,7 +13,27 @@ import info.mizoguche.botlin.BotlinMessageSender
 import info.mizoguche.botlin.BotlinMessageSession
 import info.mizoguche.botlin.publishing
 
-class Slack(private val configuration: Slack.Configuration) : BotlinFeature {
+class SlackMessageEvent(
+        channelId: String,
+        message: String,
+        rawMessage: String,
+        sender: BotlinMessageSender,
+        session: BotlinMessageSession,
+        reply: (String) -> Unit)
+    : BotlinMessageEvent(
+        channelId,
+        message,
+        rawMessage,
+        sender,
+        session,
+        reply) {
+    suspend override fun execute(): BotlinEventResult<Unit> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+}
+
+class Slack(
+        private val configuration: Slack.Configuration) : BotlinFeature {
     override val id: BotlinFeatureId
         get() = BotlinFeatureId("Slack")
 
