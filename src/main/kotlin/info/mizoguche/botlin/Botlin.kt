@@ -2,10 +2,6 @@ package info.mizoguche.botlin
 
 import kotlinx.coroutines.experimental.async
 
-interface BotlinEvent {
-    val responder: BotlinFeatureId
-}
-
 interface BotlinRequest<out T> {
     suspend fun execute(): BotlinResponse<T>
 }
@@ -24,13 +20,13 @@ class Botlin {
         return feature
     }
 
-    inline fun <reified T : BotlinEvent> on(subscriber: BotlinSubscriber<T>) {
+    inline fun <reified T : Any> on(subscriber: BotlinSubscriber<T>) {
         val clazz = T::class.java
         subscriptions[clazz]?.add(subscriber) ?: subscriptions.put(clazz, mutableSetOf(subscriber))
     }
 
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T : BotlinEvent> publish(event: T) {
+    inline fun <reified T : Any> publish(event: T) {
         subscriptions[event.javaClass]?.forEach {
             val subscriber = it as? BotlinSubscriber<T> ?: return@forEach
             subscriber.onPublishing(event)

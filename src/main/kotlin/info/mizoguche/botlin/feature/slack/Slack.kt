@@ -3,7 +3,6 @@ package info.mizoguche.botlin.feature.slack
 import com.ullink.slack.simpleslackapi.SlackSession
 import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory
 import info.mizoguche.botlin.Botlin
-import info.mizoguche.botlin.BotlinEventResult
 import info.mizoguche.botlin.BotlinFeature
 import info.mizoguche.botlin.BotlinFeatureFactory
 import info.mizoguche.botlin.BotlinFeatureId
@@ -26,11 +25,7 @@ class SlackMessageEvent(
         rawMessage,
         sender,
         session,
-        reply) {
-    suspend override fun execute(): BotlinEventResult<Unit> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-}
+        reply)
 
 class Slack(
         private val configuration: Slack.Configuration) : BotlinFeature {
@@ -49,7 +44,7 @@ class Slack(
         session.connect()
         session.addMessagePostedListener { event, sess ->
             if (event.sender.id != session.sessionPersona().id) {
-                val e = BotlinMessageEvent(
+                val e = SlackMessageEvent(
                         channelId = event.channel.id,
                         message = event.messageContent.replace("<@${session.sessionPersona().id}> ", ""),
                         rawMessage = event.messageContent,
@@ -68,7 +63,7 @@ class Slack(
             }
         }
 
-        botlin.on<BotlinMessageRequest>(publishing {
+        botlin.on(publishing<BotlinMessageRequest> {
             val channel = session.findChannelById(it.channelId)
             session.sendMessage(channel, it.message)
         })

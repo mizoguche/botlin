@@ -34,9 +34,9 @@ class Command(private val configuration: Configuration) : BotlinFeature {
     override fun start(botlin: Botlin) {
         println("Start Command feature")
 
-        botlin.on<BotlinMessageEvent>(publishing {
+        botlin.on(publishing<BotlinMessageEvent> {
             if (it.isMention) {
-                botlin.publish<BotlinCommand>(BotlinCommand(botlin, it))
+                botlin.publish(BotlinCommand(botlin, it))
             }
         })
     }

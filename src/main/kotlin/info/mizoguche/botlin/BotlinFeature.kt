@@ -13,13 +13,10 @@ interface BotlinFeatureFactory<out C : Any, out F : BotlinFeature> {
 }
 
 interface BotlinSubscriber<in T> {
-    val id: BotlinFeatureId
     fun onPublishing(event: T)
 }
 
-fun <T> publishing(id: BotlinFeatureId, p: (T) -> Unit) = object : BotlinSubscriber<T> {
-    override val id = id
-
+fun <T> publishing(p: (T) -> Unit) = object : BotlinSubscriber<T> {
     override fun onPublishing(event: T) {
         p(event)
     }

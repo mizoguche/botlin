@@ -20,7 +20,7 @@ abstract class BotlinMessageEvent(
         val rawMessage: String,
         val sender: BotlinMessageSender,
         val session: BotlinMessageSession,
-        val reply: (String) -> Unit) : BotlinEvent<Unit> {
+        val reply: (String) -> Unit) {
     val isMention: Boolean
         get() = message != rawMessage
 }
