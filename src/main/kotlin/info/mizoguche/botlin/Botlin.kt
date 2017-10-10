@@ -10,18 +10,16 @@ class Botlin {
         return feature
     }
 
-    inline fun <reified T> on(subscriber: BotlinSubscriber<T>) {
+    inline fun <reified T : Any> on(subscriber: BotlinSubscriber<T>) {
         val clazz = T::class.java
         subscriptions[clazz]?.add(subscriber) ?: subscriptions.put(clazz, mutableSetOf(subscriber))
     }
 
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T : Any> publish(event: Any) {
+    inline fun <reified T : Any> publish(event: T) {
         subscriptions[event.javaClass]?.forEach {
-            if (event is T) {
-                val subscriber = it as? BotlinSubscriber<T> ?: return@forEach
-                subscriber.onPublishing(event)
-            }
+            val subscriber = it as BotlinSubscriber<T>
+            subscriber.onPublishing(event)
         }
     }
 

@@ -1,6 +1,5 @@
 package info.mizoguche.botlin.feature.slack
 
-import com.ullink.slack.simpleslackapi.SlackChannel
 import com.ullink.slack.simpleslackapi.SlackSession
 import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory
 import info.mizoguche.botlin.Botlin
@@ -13,7 +12,8 @@ import info.mizoguche.botlin.BotlinMessageSender
 import info.mizoguche.botlin.BotlinMessageSession
 import info.mizoguche.botlin.publishing
 
-class Slack(private val configuration: Slack.Configuration) : BotlinFeature {
+class Slack(
+        private val configuration: Slack.Configuration) : BotlinFeature {
     override val id: BotlinFeatureId
         get() = BotlinFeatureId("Slack")
 
@@ -44,11 +44,11 @@ class Slack(private val configuration: Slack.Configuration) : BotlinFeature {
                         ),
                         reply = { session.sendMessage(event.channel, it) }
                 )
-                botlin.publish<BotlinMessageEvent>(e)
+                botlin.publish(e)
             }
         }
 
-        botlin.on<BotlinMessageRequest>(publishing {
+        botlin.on(publishing<BotlinMessageRequest> {
             val channel = session.findChannelById(it.channelId)
             session.sendMessage(channel, it.message)
         })

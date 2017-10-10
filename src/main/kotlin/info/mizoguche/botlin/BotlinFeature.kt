@@ -4,8 +4,6 @@ data class BotlinFeatureId(val value: String)
 
 interface BotlinFeature {
     val id: BotlinFeatureId
-        get
-
     fun start(botlin: Botlin)
     fun stop(botlin: Botlin)
 }

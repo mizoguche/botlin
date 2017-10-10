@@ -14,7 +14,7 @@ class Redis(private val configuration: Redis.Configuration) : BotlinFeature {
     override val id: BotlinFeatureId
         get() = BotlinFeatureId("Redis")
 
-    var jedis: Jedis? = null
+    private var jedis: Jedis? = null
 
     override fun stop(botlin: Botlin) {
         jedis?.disconnect()
