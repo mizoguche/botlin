@@ -18,7 +18,7 @@ class Botlin {
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T : Any> publish(event: T) {
         subscriptions[event.javaClass]?.forEach {
-            val subscriber = it as? BotlinSubscriber<T> ?: return@forEach
+            val subscriber = it as BotlinSubscriber<T>
             subscriber.onPublishing(event)
         }
     }
