@@ -7,7 +7,7 @@ import info.mizoguche.botlin.BotlinFeatureId
 import info.mizoguche.botlin.BotlinMessageEvent
 import info.mizoguche.botlin.publishing
 
-class BotlinCommand(val botlin: Botlin, val msgEvent: BotlinMessageEvent) {
+data class BotlinCommand(val botlin: Botlin, val msgEvent: BotlinMessageEvent) {
     val command: String
         get() = if (msgEvent.message.indexOf(" ") > -1) {
             msgEvent.message.split(" ")[0]
