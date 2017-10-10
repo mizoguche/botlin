@@ -44,7 +44,7 @@ class Slack(
                         ),
                         reply = { session.sendMessage(event.channel, it) }
                 )
-                botlin.publish<BotlinMessageEvent>(e)
+                botlin.publish(e)
             }
         }
 

@@ -84,7 +84,7 @@ class Cron : CommandFeature() {
                     |$schedules
                     """.trimMargin())
             }
-            command.botlin.publish<BotlinStoreGetRequest>(storeGetReq)
+            command.botlin.publish(storeGetReq)
         }
     }
 
@@ -94,7 +94,7 @@ class Cron : CommandFeature() {
                 val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
                 command.msgEvent.reply(schedules.toString())
             }
-            command.botlin.publish<BotlinStoreGetRequest>(storeGetReq)
+            command.botlin.publish(storeGetReq)
         }
     }
 
@@ -106,7 +106,7 @@ class Cron : CommandFeature() {
                 stopSchedule(scheduleId)
                 val json = gson.toJson(schedules)
                 val setReq = BotlinStoreSetRequest(id, json)
-                command.botlin.publish<BotlinStoreSetRequest>(setReq)
+                command.botlin.publish(setReq)
                 command.msgEvent.reply("""
                     |Removed schedule.
                     |
@@ -114,7 +114,7 @@ class Cron : CommandFeature() {
                     |$schedules
                     """.trimMargin())
             }
-            command.botlin.publish<BotlinStoreGetRequest>(storeGetReq)
+            command.botlin.publish(storeGetReq)
         }
     }
 
@@ -156,7 +156,7 @@ class Cron : CommandFeature() {
                 startSchedule(botlin, it)
             }
         }
-        botlin.publish<BotlinStoreGetRequest>(storeGetReq)
+        botlin.publish(storeGetReq)
     }
 
     override val id: BotlinFeatureId
@@ -183,7 +183,7 @@ private val startedSchedules = mutableMapOf<Int, Scheduler>()
 private fun startSchedule(botlin: Botlin, schedule: Schedule) {
     val scheduler = Scheduler().apply {
         schedule(schedule.cron) {
-            botlin.publish<BotlinMessageRequest>(BotlinMessageRequest(
+            botlin.publish(BotlinMessageRequest(
                     channelId = schedule.channelId,
                     message = schedule.command
             ))

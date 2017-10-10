@@ -15,7 +15,7 @@ abstract class CommandFeature : BotlinFeature {
     override fun start(botlin: Botlin) {
         onStart(botlin)
 
-        botlin.publish<CommandFeatureRegister>(CommandFeatureRegister(this))
+        botlin.publish(CommandFeatureRegister(this))
 
         botlin.on<BotlinCommand>(publishing {
             if (it.command == command) {
