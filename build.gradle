@@ -27,6 +27,7 @@ apply plugin: 'kotlin'
 apply plugin: 'java'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: "maven-publish"
+apply from: 'spek.gradle'
 
 detekt {
     version = "1.0.0.M11"
