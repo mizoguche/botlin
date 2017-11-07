@@ -48,7 +48,6 @@ class Cron : CommandFeature() {
         return idCandidate
     }
 
-
     data class Schedule(val id: Int, val channelId: String, val cron: String, val command: String) {
         override fun toString(): String {
             return "${id.toString().padStart(4, ' ')}: \"$cron\" $command"
@@ -161,7 +160,6 @@ class Cron : CommandFeature() {
 
     override val id: BotlinFeatureId
         get() = BotlinFeatureId("Cron")
-
 
     class Configuration
 
