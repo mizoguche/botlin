@@ -1,6 +1,7 @@
 package info.mizoguche.botlin.engine
 
 import info.mizoguche.botlin.BotMessage
+import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 
 typealias PipelineInterceptor<TContext> = suspend (TContext) -> Unit
@@ -21,8 +22,8 @@ class SlackEngine {
         messageInterceptors.add(interceptor)
     }
 
-    inline fun execute(message: BotMessage) {
+    inline fun execute(message: BotMessage): Job {
         val context = MessagePipelineContext(interceptors, message)
-        launch { context.proceed() }
+        return launch { context.proceed() }
     }
 }

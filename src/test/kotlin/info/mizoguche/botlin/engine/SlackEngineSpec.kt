@@ -1,12 +1,18 @@
 package info.mizoguche.botlin.engine
 
 import info.mizoguche.botlin.BotMessage
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.runBlocking
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+
+fun join(coroutine: () -> Job) = runBlocking {
+    coroutine().join()
+}
 
 class SlackEngineSpec : Spek({
     val engine = SlackEngine()
@@ -27,10 +33,9 @@ class SlackEngineSpec : Spek({
                     receivedMessage = it
                 }
 
-                engine.execute(message)
-
-                // TODO: improve synchronization
-                Thread.sleep(10)
+                join {
+                    engine.execute(message)
+                }
 
                 assertNotNull(receivedMessage)
                 assertEquals(message, receivedMessage)
