@@ -1,6 +1,5 @@
-package info.mizoguche.botlin.pipeline
+package info.mizoguche.botlin
 
-import info.mizoguche.botlin.BotMessage
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 

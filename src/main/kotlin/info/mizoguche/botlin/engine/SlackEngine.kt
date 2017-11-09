@@ -43,7 +43,6 @@ class BotSlackMessage(private val slackSession: SlackSession, private val event:
     override fun reply(body: String) {
         slackSession.sendMessage(event.channel, body)
     }
-
 }
 
 class SlackEngine(val configuration: Configuration) : BotEngine {

@@ -1,6 +1,6 @@
-package info.mizoguche.botlin
+package info.mizoguche.botlin.feature
 
-import info.mizoguche.botlin.pipeline.BotMessagePipeline
+import info.mizoguche.botlin.BotMessagePipeline
 
 data class BotFeatureId(val value: String)
 
