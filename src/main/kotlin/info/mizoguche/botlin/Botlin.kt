@@ -1,8 +1,14 @@
 package info.mizoguche.botlin
 
+import info.mizoguche.botlin.engine.BotEngine
+import info.mizoguche.botlin.engine.BotEngineFactory
+import info.mizoguche.botlin.engine.MessageInterceptor
+import sun.plugin.dom.exception.InvalidStateException
+
 class Botlin {
     private val features = mutableListOf<BotlinFeature>()
     val subscriptions = mutableMapOf<Class<*>, MutableSet<Any>>()
+    private lateinit var engine: BotEngine
 
     fun <C : Any, F : BotlinFeature, G : BotlinFeatureFactory<C, F>> install(factory: G, configure: C.() -> Unit = {}): F {
         val feature = factory.create(configure)
@@ -23,6 +29,12 @@ class Botlin {
         }
     }
 
+    fun <C : Any, E : BotEngine, F : BotEngineFactory<C, E>> installEngine(factory: F, configure: C.() -> Unit = {}): E {
+        val e = factory.create(configure)
+        engine = e
+        return e
+    }
+
     fun start() {
         try {
             features.forEach { it.start(this) }
@@ -32,6 +44,13 @@ class Botlin {
         } finally {
             features.forEach { it.stop(this) }
         }
+    }
+
+    fun intercept(messageInterceptor: MessageInterceptor) {
+        if (engine == null) {
+            throw InvalidStateException("No engine installed yet")
+        }
+        engine.intercept(messageInterceptor)
     }
 }
 

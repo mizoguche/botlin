@@ -13,16 +13,16 @@ class MessagePipelineContext(val interceptors: List<MessageInterceptor>, val mes
     }
 }
 
-class SlackEngine {
+class SlackEngine : BotEngine {
     private val messageInterceptors = mutableListOf<MessageInterceptor>()
     val interceptors: List<MessageInterceptor>
         get() = messageInterceptors
 
-    fun intercept(interceptor: MessageInterceptor) {
+    override fun intercept(interceptor: MessageInterceptor) {
         messageInterceptors.add(interceptor)
     }
 
-    inline fun execute(message: BotMessage): Job {
+    override inline fun execute(message: BotMessage): Job {
         val context = MessagePipelineContext(interceptors, message)
         return launch { context.proceed() }
     }
