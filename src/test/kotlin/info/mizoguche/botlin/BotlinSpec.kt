@@ -2,7 +2,6 @@ package info.mizoguche.botlin
 
 import info.mizoguche.botlin.engine.BotEngine
 import info.mizoguche.botlin.engine.BotEngineFactory
-import info.mizoguche.botlin.engine.MessageInterceptor
 import info.mizoguche.botlin.feature.BotFeature
 import info.mizoguche.botlin.feature.BotFeatureFactory
 import io.mockk.coEvery
