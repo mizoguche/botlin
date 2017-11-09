@@ -4,6 +4,7 @@ import info.mizoguche.botlin.engine.BotEngine
 import info.mizoguche.botlin.engine.BotEngineFactory
 import info.mizoguche.botlin.engine.BotMessageHandler
 import info.mizoguche.botlin.engine.MessageInterceptor
+import info.mizoguche.botlin.pipeline.BotMessagePipeline
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.spek.api.Spek
@@ -63,6 +64,40 @@ class BotlinSpec : Spek({
                     botlin {
                         installEngine(factory)
                         intercept(interceptor)
+                    }.start()
+                }
+                job.cancel()
+
+                join { engine.post(message) }
+                assertEquals(receivedMessage, message)
+            }
+        }
+    }
+
+    describe("#install") {
+        var receivedMessage: BotMessage? = null
+
+        val feature = object : BotFeature {
+            override val id: BotFeatureId
+                get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+            override fun install(engine: BotMessagePipeline) {
+                engine.intercept { receivedMessage = it }
+            }
+        }
+
+        val featureFactory = object : BotFeatureFactory<Unit> {
+            override fun create(configure: Unit.() -> Unit): BotFeature {
+                return feature
+            }
+        }
+
+        on("install") {
+            it("should send message to interceptor of installed feature") {
+                val job = launch {
+                    botlin {
+                        installEngine(factory)
+                        install(featureFactory)
                     }.start()
                 }
                 job.cancel()
