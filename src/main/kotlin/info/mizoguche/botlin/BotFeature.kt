@@ -9,6 +9,6 @@ interface BotFeature {
     fun install(engine: BotMessagePipeline)
 }
 
-interface BotFeatureFactory<out C : Any, out F : BotFeature> {
-    fun create(configure: C.() -> Unit = {}): F
+interface BotFeatureFactory<out C : Any> {
+    fun create(configure: C.() -> Unit = {}): BotFeature
 }

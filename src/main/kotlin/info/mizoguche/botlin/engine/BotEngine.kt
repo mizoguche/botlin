@@ -9,6 +9,6 @@ interface BotEngine {
     fun stop()
 }
 
-interface BotEngineFactory<out C : Any, out E : BotEngine> {
-    fun create(configure: C.() -> Unit = {}): E
+interface BotEngineFactory<out C : Any> {
+    fun create(configure: C.() -> Unit = {}): BotEngine
 }

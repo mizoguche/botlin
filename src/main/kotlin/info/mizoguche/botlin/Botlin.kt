@@ -10,16 +10,16 @@ class Botlin {
     private var engine: BotEngine? = null
     private val messagePipeline = BotMessagePipeline()
 
-    fun <C : Any, F : BotFeature, G : BotFeatureFactory<C, F>> install(factory: G, configure: C.() -> Unit = {}): F {
+    fun <TConf : Any, TFactory : BotFeatureFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotFeature {
         val feature = factory.create(configure)
         feature.install(messagePipeline)
         return feature
     }
 
-    fun <C : Any, E : BotEngine, F : BotEngineFactory<C, E>> installEngine(factory: F, configure: C.() -> Unit = {}): E {
-        val e = factory.create(configure)
-        engine = e
-        return e
+    fun <TConf : Any, TFactory : BotEngineFactory<TConf>> installEngine(factory: TFactory, configure: TConf.() -> Unit = {}): BotEngine {
+        val engine = factory.create(configure)
+        this.engine = engine
+        return engine
     }
 
     fun start() {
