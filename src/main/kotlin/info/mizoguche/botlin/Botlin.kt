@@ -48,7 +48,7 @@ class Botlin {
 
     fun intercept(messageInterceptor: MessageInterceptor) {
         if (engine == null) {
-            throw InvalidStateException("No engine installed yet")
+            throw InvalidStateException("No engine is installed")
         }
         engine.intercept(messageInterceptor)
     }
