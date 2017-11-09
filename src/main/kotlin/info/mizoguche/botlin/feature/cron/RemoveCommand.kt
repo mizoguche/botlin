@@ -13,7 +13,7 @@ class RemoveCommand(val id: BotlinFeatureId, val command: BotlinCommand, val sch
             stopSchedule(scheduleId)
             val json = gson.toJson(schedules)
             val setReq = BotlinStoreSetRequest(id, json)
-            command.botlin.publish(setReq)
+//            command.botlin.publish(setReq)
             command.msgEvent.reply("""
                     |Removed schedule.
                     |
@@ -21,6 +21,6 @@ class RemoveCommand(val id: BotlinFeatureId, val command: BotlinCommand, val sch
                     |$schedules
                     """.trimMargin())
         }
-        command.botlin.publish(storeGetReq)
+//        command.botlin.publish(storeGetReq)
     }
 }

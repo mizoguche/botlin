@@ -26,14 +26,14 @@ class Redis(private val configuration: Redis.Configuration) : BotlinFeature {
         }
         jedis = session
 
-        botlin.on<BotlinStoreSetRequest>(publishing {
-            session.set(it.featureId.value, it.value)
-        })
-
-        botlin.on<BotlinStoreGetRequest>(publishing {
-            val value = session.get(it.featureId.value)
-            it.callback(value)
-        })
+//        botlin.on<BotlinStoreSetRequest>(publishing {
+//            session.set(it.featureId.value, it.value)
+//        })
+//
+//        botlin.on<BotlinStoreGetRequest>(publishing {
+//            val value = session.get(it.featureId.value)
+//            it.callback(value)
+//        })
     }
 
     class Configuration {

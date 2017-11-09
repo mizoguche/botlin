@@ -10,6 +10,6 @@ class ListCommand(val id: BotlinFeatureId, val command: BotlinCommand) : Subcomm
             val schedules = gson.fromJson(it, Cron.Schedules::class.java) ?: Cron.Schedules(mutableListOf())
             command.msgEvent.reply(schedules.toString())
         }
-        command.botlin.publish(storeGetReq)
+//        command.botlin.publish(storeGetReq)
     }
 }

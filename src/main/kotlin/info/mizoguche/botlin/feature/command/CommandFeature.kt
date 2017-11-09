@@ -15,13 +15,13 @@ abstract class CommandFeature : BotlinFeature {
     override fun start(botlin: Botlin) {
         onStart(botlin)
 
-        botlin.publish(CommandFeatureRegister(this))
-
-        botlin.on<BotlinCommand>(publishing {
-            if (it.command == command) {
-                onCommandPublishing(it)
-            }
-        })
+//        botlin.publish(CommandFeatureRegister(this))
+//
+//        botlin.on<BotlinCommand>(publishing {
+//            if (it.command == command) {
+//                onCommandPublishing(it)
+//            }
+//        })
     }
 
     override fun stop(botlin: Botlin) {
@@ -42,14 +42,14 @@ class CommandHelp(conf: Configuration) : CommandFeature() {
     private val help = StringBuilder()
 
     override fun onStart(botlin: Botlin) {
-        botlin.on<CommandFeatureRegister>(publishing {
-            help.append("""
-                |${it.feature.command}: ${it.feature.description}
-                |${it.feature.usage.prependIndent()}
-                |
-                |
-                """.trimMargin())
-        })
+//        botlin.on<CommandFeatureRegister>(publishing {
+//            help.append("""
+//                |${it.feature.command}: ${it.feature.description}
+//                |${it.feature.usage.prependIndent()}
+//                |
+//                |
+//                """.trimMargin())
+//        })
     }
 
     override fun onCommandPublishing(command: BotlinCommand) {

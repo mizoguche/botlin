@@ -12,7 +12,7 @@ class AddCommand(val id: BotlinFeatureId, val command: BotlinCommand, val schedu
             schedules.schedules.add(schedule)
             val json = gson.toJson(schedules)
             val setReq = BotlinStoreSetRequest(id, json)
-            command.botlin.publish(setReq)
+//            command.botlin.publish(setReq)
             startSchedule(command.botlin, schedule)
             command.msgEvent.reply("""
                     |Created schedule.
@@ -21,6 +21,6 @@ class AddCommand(val id: BotlinFeatureId, val command: BotlinCommand, val schedu
                     |$schedules
                     """.trimMargin())
         }
-        command.botlin.publish(storeGetReq)
+//        command.botlin.publish(storeGetReq)
     }
 }

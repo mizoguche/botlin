@@ -100,7 +100,7 @@ class Cron : CommandFeature() {
                 startSchedule(botlin, it)
             }
         }
-        botlin.publish(storeGetReq)
+//        botlin.publish(storeGetReq)
     }
 
     override val id: BotlinFeatureId
@@ -127,10 +127,10 @@ val gson = Gson()
 fun startSchedule(botlin: Botlin, schedule: Schedule) {
     val scheduler = Scheduler().apply {
         schedule(schedule.cron) {
-            botlin.publish(BotlinMessageRequest(
-                    channelId = schedule.channelId,
-                    message = schedule.command
-            ))
+//            botlin.publish(BotlinMessageRequest(
+//                    channelId = schedule.channelId,
+//                    message = schedule.command
+//            ))
         }
     }
     scheduler.start()
