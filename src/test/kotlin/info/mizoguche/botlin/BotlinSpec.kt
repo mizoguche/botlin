@@ -22,7 +22,9 @@ class BotlinSpec : Spek({
 
         override inline fun execute(message: BotMessage): Job {
             receivedMessage = message
-            return launch { receivedInterceptor?.invoke(message) }
+
+            return launch { receivedInterceptor?.invoke(message)
+            }
         }
     }
 
