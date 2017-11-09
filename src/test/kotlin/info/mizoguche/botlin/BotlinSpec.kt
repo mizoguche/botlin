@@ -4,6 +4,8 @@ import info.mizoguche.botlin.engine.BotEngine
 import info.mizoguche.botlin.engine.BotEngineFactory
 import info.mizoguche.botlin.feature.BotFeature
 import info.mizoguche.botlin.feature.BotFeatureFactory
+import info.mizoguche.botlin.storage.BotStorage
+import info.mizoguche.botlin.storage.BotStorageFactory
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -85,16 +87,15 @@ class BotlinSpec : Spek({
             }
         }
 
-        every { storage.start(any()) } returns Unit
+        coEvery { storage.start() } returns Unit
 
         on("install") {
-            it("should send message to interceptor of installed feature") {
+            it("should start storage") {
                 startBotlin {
-                    install(engineFactory)
                     install(storageFactory)
                 }
 
-                verify { storage.start(any()) }
+                coVerify { storage.start() }
             }
         }
     }
