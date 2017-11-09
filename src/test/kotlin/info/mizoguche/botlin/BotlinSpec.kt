@@ -29,7 +29,7 @@ class BotlinSpec : Spek({
         }
     }
 
-    val factory = object : BotEngineFactory<Unit> {
+    val engineFactory = object : BotEngineFactory<Unit> {
         override fun create(configure: Unit.() -> Unit): BotEngine {
             return engine
         }
@@ -62,10 +62,11 @@ class BotlinSpec : Spek({
 
                 val job = launch {
                     botlin {
-                        installEngine(factory)
+                        install(engineFactory)
                         intercept(interceptor)
                     }.start()
                 }
+                Thread.sleep(100)
                 job.cancel()
 
                 join { engine.post(message) }
@@ -96,10 +97,11 @@ class BotlinSpec : Spek({
             it("should send message to interceptor of installed feature") {
                 val job = launch {
                     botlin {
-                        installEngine(factory)
+                        install(engineFactory)
                         install(featureFactory)
                     }.start()
                 }
+                Thread.sleep(100)
                 job.cancel()
 
                 join { engine.post(message) }

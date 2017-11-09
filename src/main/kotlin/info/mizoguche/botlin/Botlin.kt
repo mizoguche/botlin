@@ -17,7 +17,7 @@ class Botlin {
         return feature
     }
 
-    fun <TConf : Any, TFactory : BotEngineFactory<TConf>> installEngine(factory: TFactory, configure: TConf.() -> Unit = {}): BotEngine {
+    fun <TConf : Any, TFactory : BotEngineFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotEngine {
         val engine = factory.create(configure)
         this.engine = engine
         return engine
