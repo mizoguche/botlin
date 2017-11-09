@@ -1,10 +1,17 @@
 package info.mizoguche.botlin.pipeline
 
 import info.mizoguche.botlin.BotMessage
-import info.mizoguche.botlin.engine.MessageInterceptor
-import info.mizoguche.botlin.engine.MessagePipelineContext
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
+
+typealias PipelineInterceptor<TContext> = suspend (TContext) -> Unit
+typealias MessageInterceptor = PipelineInterceptor<BotMessage>
+
+class MessagePipelineContext(private val interceptors: List<MessageInterceptor>, val message: BotMessage) {
+    suspend fun proceed() {
+        interceptors.forEach { it.invoke(message) }
+    }
+}
 
 class BotMessagePipeline {
     private val messageInterceptors = mutableListOf<MessageInterceptor>()
