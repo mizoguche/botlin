@@ -2,6 +2,7 @@ package info.mizoguche.botlin
 
 import info.mizoguche.botlin.engine.BotEngine
 import info.mizoguche.botlin.engine.BotEngineFactory
+import info.mizoguche.botlin.engine.BotMessageHandler
 import info.mizoguche.botlin.engine.MessageInterceptor
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
@@ -13,88 +14,62 @@ import kotlin.test.assertEquals
 
 class BotlinSpec : Spek({
     val engine = object : BotEngine {
-        var receivedInterceptor: MessageInterceptor? = null
-        var receivedMessage: BotMessage? = null
+        var handler: BotMessageHandler? = null
 
-        override fun intercept(interceptor: MessageInterceptor) {
-            receivedInterceptor = interceptor
+        suspend override fun start(handler: BotMessageHandler) {
+            this.handler = handler
         }
 
-        override inline fun execute(message: BotMessage): Job {
-            receivedMessage = message
+        override fun stop() {
+        }
 
-            return launch { receivedInterceptor?.invoke(message)
-            }
+        fun post(message: BotMessage): Job {
+            return launch { handler?.invoke(message) }
         }
     }
 
-    val factory = object : BotEngineFactory<Unit, BotEngine> {
+    val factory = object : BotEngineFactory<Unit> {
         override fun create(configure: Unit.() -> Unit): BotEngine {
             return engine
         }
     }
 
-    describe("add interceptor") {
-        on("installEngine") {
-            it("should receive interceptor") {
-                val interceptor: MessageInterceptor = {}
-                botlin {
-                    installEngine(factory)
-                    intercept(interceptor)
-                }
-                assertEquals(interceptor, engine.receivedInterceptor)
-            }
-        }
+    val message = object : BotMessage {
+        override val channelId: String
+            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        override val message: String
+            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        override val rawMessage: String
+            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        override val sender: BotMessageSender
+            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        override val session: BotMessageSession
+            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
-        on("intercept") {
-            it("should send message to interceptor") {
-                val interceptor: MessageInterceptor = {}
-                val message = object : BotMessage {}
-
-                botlin {
-                    installEngine(factory)
-                    intercept(interceptor)
-                }
-
-                join { engine.execute(message) }
-
-                assertEquals(message, engine.receivedMessage)
-            }
+        override fun reply(body: String) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
     }
 
-    describe("install feature") {
-        it("should send message to feature") {
-            val feature = object : BotFeature {
-                override fun install(engine: BotEngine) {
-                    println("install called")
-                    engine.intercept {
-                        println("intercepted")
-                        receivedMessage = it
-                    }
-                }
-
+    describe("#intercept") {
+        on("intercept") {
+            it("should send message to interceptor") {
                 var receivedMessage: BotMessage? = null
-                override val id: BotFeatureId
-                    get() = BotFeatureId("test")
-            }
-
-            val featureFactory = object : BotFeatureFactory<Unit, BotFeature> {
-                override fun create(configure: Unit.() -> Unit): BotFeature {
-                    return feature
+                val interceptor: MessageInterceptor = {
+                    receivedMessage = it
                 }
+
+                val job = launch {
+                    botlin {
+                        installEngine(factory)
+                        intercept(interceptor)
+                    }.start()
+                }
+                job.cancel()
+
+                join { engine.post(message) }
+                assertEquals(receivedMessage, message)
             }
-
-            val message = object : BotMessage {}
-
-            botlin {
-                installEngine(factory)
-                install(featureFactory)
-            }
-
-            join { engine.execute(message) }
-
-            assertEquals(message, feature.receivedMessage)
         }
     }
 })

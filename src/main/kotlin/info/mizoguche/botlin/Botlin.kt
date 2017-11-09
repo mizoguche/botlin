@@ -2,6 +2,7 @@ package info.mizoguche.botlin
 
 import info.mizoguche.botlin.engine.BotEngine
 import info.mizoguche.botlin.engine.BotEngineFactory
+import info.mizoguche.botlin.engine.MessageInterceptor
 import info.mizoguche.botlin.pipeline.BotMessagePipeline
 import kotlinx.coroutines.experimental.launch
 import sun.plugin.dom.exception.InvalidStateException
@@ -20,6 +21,10 @@ class Botlin {
         val engine = factory.create(configure)
         this.engine = engine
         return engine
+    }
+
+    fun intercept(messageInterceptor: MessageInterceptor) {
+        messagePipeline.intercept(messageInterceptor)
     }
 
     fun start() {
