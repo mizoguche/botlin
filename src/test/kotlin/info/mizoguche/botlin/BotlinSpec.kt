@@ -60,16 +60,13 @@ class BotlinSpec : Spek({
                     receivedMessage = it
                 }
 
-                val job = launch {
-                    botlin {
-                        install(engineFactory)
-                        intercept(interceptor)
-                    }.start()
+                startBotlin {
+                    install(engineFactory)
+                    intercept(interceptor)
                 }
-                Thread.sleep(100)
-                job.cancel()
 
                 join { engine.post(message) }
+
                 assertEquals(receivedMessage, message)
             }
         }
@@ -95,16 +92,13 @@ class BotlinSpec : Spek({
 
         on("install") {
             it("should send message to interceptor of installed feature") {
-                val job = launch {
-                    botlin {
-                        install(engineFactory)
-                        install(featureFactory)
-                    }.start()
+                startBotlin {
+                    install(engineFactory)
+                    install(featureFactory)
                 }
-                Thread.sleep(100)
-                job.cancel()
 
                 join { engine.post(message) }
+
                 assertEquals(receivedMessage, message)
             }
         }
