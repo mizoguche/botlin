@@ -9,7 +9,6 @@ import info.mizoguche.botlin.feature.command.BotlinCommand
 import info.mizoguche.botlin.feature.command.CommandFeature
 import info.mizoguche.botlin.feature.cron.Cron.Schedule
 import info.mizoguche.botlin.feature.redis.BotlinStoreGetRequest
-import info.mizoguche.botlin.feature.redis.BotlinStoreSetRequest
 import it.sauronsoftware.cron4j.Scheduler
 import java.util.Random
 import java.util.regex.Pattern
@@ -63,60 +62,6 @@ class Cron : CommandFeature() {
         }
     }
 
-    private interface Subcommand {
-        fun execute()
-    }
-
-    private class AddCommand(val id: BotlinFeatureId, val command: BotlinCommand, val schedule: Schedule) : Subcommand {
-        override fun execute() {
-            val storeGetReq = BotlinStoreGetRequest(id) {
-                val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
-                schedules.schedules.add(schedule)
-                val json = gson.toJson(schedules)
-                val setReq = BotlinStoreSetRequest(id, json)
-                command.botlin.publish<BotlinStoreSetRequest>(setReq)
-                startSchedule(command.botlin, schedule)
-                command.msgEvent.reply("""
-                    |Created schedule.
-                    |
-                    |Current schedules:
-                    |$schedules
-                    """.trimMargin())
-            }
-            command.botlin.publish(storeGetReq)
-        }
-    }
-
-    private class ListCommand(val id: BotlinFeatureId, val command: BotlinCommand) : Subcommand {
-        override fun execute() {
-            val storeGetReq = BotlinStoreGetRequest(id) {
-                val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
-                command.msgEvent.reply(schedules.toString())
-            }
-            command.botlin.publish(storeGetReq)
-        }
-    }
-
-    private class RemoveCommand(val id: BotlinFeatureId, val command: BotlinCommand, val scheduleId: Int) : Subcommand {
-        override fun execute() {
-            val storeGetReq = BotlinStoreGetRequest(id) {
-                val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
-                schedules.schedules.removeIf { it.id == scheduleId }
-                stopSchedule(scheduleId)
-                val json = gson.toJson(schedules)
-                val setReq = BotlinStoreSetRequest(id, json)
-                command.botlin.publish(setReq)
-                command.msgEvent.reply("""
-                    |Removed schedule.
-                    |
-                    |Current schedules:
-                    |$schedules
-                    """.trimMargin())
-            }
-            command.botlin.publish(storeGetReq)
-        }
-    }
-
     private fun parse(command: BotlinCommand): Subcommand {
         if (command.args == "list") {
             return ListCommand(id, command)
@@ -166,7 +111,6 @@ class Cron : CommandFeature() {
     companion object Factory : BotlinFeatureFactory<Configuration, Cron> {
         private val ADD_COMMAND_PATTERN = Pattern.compile("add \"(.+? .+? .+? .+? .+?)\" (.+)")
         private val REMOVE_COMMAND_PATTERN = Pattern.compile("remove (\\d+?)")
-        private val gson = Gson()
 
         val MAX_SCHEDULES = 10000
 
@@ -178,7 +122,9 @@ class Cron : CommandFeature() {
 
 private val startedSchedules = mutableMapOf<Int, Scheduler>()
 
-private fun startSchedule(botlin: Botlin, schedule: Schedule) {
+val gson = Gson()
+
+fun startSchedule(botlin: Botlin, schedule: Schedule) {
     val scheduler = Scheduler().apply {
         schedule(schedule.cron) {
             botlin.publish(BotlinMessageRequest(
@@ -191,7 +137,7 @@ private fun startSchedule(botlin: Botlin, schedule: Schedule) {
     startedSchedules.put(schedule.id, scheduler)
 }
 
-private fun stopSchedule(scheduleId: Int) {
+fun stopSchedule(scheduleId: Int) {
     val scheduler = startedSchedules[scheduleId] ?: return
     scheduler.stop()
 }

@@ -10,7 +10,6 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 class BotlinSpec : Spek({
     describe("add interceptor") {
@@ -22,7 +21,7 @@ class BotlinSpec : Spek({
                 receivedInterceptor = interceptor
             }
 
-            inline override fun execute(message: BotMessage): Job {
+            override inline fun execute(message: BotMessage): Job {
                 receivedMessage = message
                 return launch { }
             }

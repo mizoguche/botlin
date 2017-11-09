@@ -2,8 +2,6 @@ package info.mizoguche.botlin.engine
 
 import info.mizoguche.botlin.BotMessage
 import info.mizoguche.botlin.join
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.runBlocking
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
