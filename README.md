@@ -7,15 +7,15 @@ Slack bot built with Kotlin
 ```kotlin
 fun main(args: Array<String>) {
     botlin {
-        install(Slack) {
-            token = System.getenv("SLACK_TOKEN")
+        install(SlackEngine) {
+            token =  System.getenv("SLACK_TOKEN")
         }
 
-        on<SlackMessageEvent>(publishing {
-            if (it.messageContent == "PING") {
-                it.session.sendMessage(it.channel, "PONG")
+        intercept {
+            if (it.rawMessage == "PING") {
+                it.reply("PONG")
             }
-        })
+        }
     }.start()
 }
 ```
