@@ -21,4 +21,5 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect"
     testCompile "org.jetbrains.kotlin:kotlin-test"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit"
+    testCompile "io.mockk:mockk:1.3"
 }
