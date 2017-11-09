@@ -14,6 +14,14 @@ class MessagePipelineContext(val interceptors: List<MessageInterceptor>, val mes
 }
 
 class SlackEngine : BotEngine {
+    suspend override fun start(handler: BotMessageHandler) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun stop() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     private val messageInterceptors = mutableListOf<MessageInterceptor>()
     val interceptors: List<MessageInterceptor>
         get() = messageInterceptors
