@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
         }
 
         intercept {
-            if (it.rawMessage == "PING") {
+            if (it.message == "PING") {
                 it.reply("PONG")
             }
         }
