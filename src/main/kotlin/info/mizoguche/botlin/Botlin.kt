@@ -10,9 +10,9 @@ class Botlin {
     val subscriptions = mutableMapOf<Class<*>, MutableSet<Any>>()
     private lateinit var engine: BotEngine
 
-    fun <C : Any, F : BotlinFeature, G : BotlinFeatureFactory<C, F>> install(factory: G, configure: C.() -> Unit = {}): F {
+    fun <C : Any, F : BotFeature, G : BotFeatureFactory<C, F>> install(factory: G, configure: C.() -> Unit = {}): F {
         val feature = factory.create(configure)
-        features.add(feature)
+        feature.install(engine)
         return feature
     }
 
