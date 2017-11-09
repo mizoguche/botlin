@@ -76,4 +76,26 @@ class BotlinSpec : Spek({
             }
         }
     }
+
+    describe("Botlin#install(BotStorage)") {
+        val storage = mockk<BotStorage>()
+        val storageFactory = object : BotStorageFactory<Unit> {
+            override fun create(configure: Unit.() -> Unit): BotStorage {
+                return storage
+            }
+        }
+
+        every { storage.start(any()) } returns Unit
+
+        on("install") {
+            it("should send message to interceptor of installed feature") {
+                startBotlin {
+                    install(engineFactory)
+                    install(storageFactory)
+                }
+
+                verify { storage.start(any()) }
+            }
+        }
+    }
 })
