@@ -6,13 +6,14 @@ import info.mizoguche.botlin.feature.BotFeature
 import info.mizoguche.botlin.feature.BotFeatureFactory
 import info.mizoguche.botlin.storage.BotStorage
 import info.mizoguche.botlin.storage.BotStorageFactory
+import info.mizoguche.botlin.storage.MemoryStorage
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import sun.plugin.dom.exception.InvalidStateException
 
 class Botlin {
     private var engine: BotEngine? = null
-    private var storage: BotStorage? = null
+    var storage: BotStorage = MemoryStorage()
     private val messagePipeline = BotMessagePipeline()
 
     fun <TConf : Any, TFactory : BotFeatureFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotFeature {
@@ -28,6 +29,8 @@ class Botlin {
     }
 
     fun <TConf : Any, TFactory : BotStorageFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotStorage {
+        this.storage.stop()
+
         val storage = factory.create(configure)
         this.storage = storage
         runBlocking { storage.start() }

@@ -4,11 +4,9 @@ import com.google.gson.Gson
 import info.mizoguche.botlin.Botlin
 import info.mizoguche.botlin.BotlinFeatureFactory
 import info.mizoguche.botlin.BotlinFeatureId
-import info.mizoguche.botlin.BotlinMessageRequest
 import info.mizoguche.botlin.feature.command.BotlinCommand
 import info.mizoguche.botlin.feature.command.CommandFeature
 import info.mizoguche.botlin.feature.cron.Cron.Schedule
-import info.mizoguche.botlin.feature.redis.BotlinStoreGetRequest
 import it.sauronsoftware.cron4j.Scheduler
 import java.util.Random
 import java.util.regex.Pattern
@@ -94,12 +92,12 @@ class Cron : CommandFeature() {
     }
 
     override fun onStart(botlin: Botlin) {
-        val storeGetReq = BotlinStoreGetRequest(id) {
-            val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
-            schedules.schedules.forEach {
-                startSchedule(botlin, it)
-            }
-        }
+//        val storeGetReq = BotlinStoreGetRequest(id) {
+//            val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
+//            schedules.schedules.forEach {
+//                startSchedule(botlin, it)
+//            }
+//        }
 //        botlin.publish(storeGetReq)
     }
 
