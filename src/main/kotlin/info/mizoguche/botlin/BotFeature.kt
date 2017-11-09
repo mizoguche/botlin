@@ -6,7 +6,7 @@ data class BotFeatureId(val value: String)
 
 interface BotFeature {
     val id: BotFeatureId
-    fun install(engine: BotMessagePipeline)
+    fun install(pipeline: BotMessagePipeline)
 }
 
 interface BotFeatureFactory<out C : Any> {
