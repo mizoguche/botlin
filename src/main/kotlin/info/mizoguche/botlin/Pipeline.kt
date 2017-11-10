@@ -4,25 +4,27 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 
 typealias PipelineInterceptor<TContext> = suspend (TContext) -> Unit
-typealias MessageInterceptor = PipelineInterceptor<BotMessage>
 
-class MessagePipelineContext(private val interceptors: List<MessageInterceptor>, val message: BotMessage) {
+class PipelineContext<out TContext>(private val interceptors: List<PipelineInterceptor<TContext>>, val message: TContext) {
     suspend fun proceed() {
         interceptors.forEach { it.invoke(message) }
     }
 }
 
-class BotMessagePipeline {
-    private val messageInterceptors = mutableListOf<MessageInterceptor>()
-    val interceptors: List<MessageInterceptor>
-        get() = messageInterceptors
+abstract class Pipeline<TContext> {
+    private val contextInterceptors = mutableListOf<PipelineInterceptor<TContext>>()
+    val interceptors: List<PipelineInterceptor<TContext>>
+        get() = contextInterceptors
 
-    fun intercept(interceptor: MessageInterceptor) {
-        messageInterceptors.add(interceptor)
+    fun intercept(interceptor: PipelineInterceptor<TContext>) {
+        contextInterceptors.add(interceptor)
     }
 
-    inline fun execute(message: BotMessage): Job {
-        val context = MessagePipelineContext(interceptors, message)
+    inline fun execute(context: TContext): Job {
+        val context = PipelineContext(interceptors, context)
         return launch { context.proceed() }
     }
 }
+
+typealias MessageInterceptor = PipelineInterceptor<BotMessage>
+class BotMessagePipeline : Pipeline<BotMessage>()
