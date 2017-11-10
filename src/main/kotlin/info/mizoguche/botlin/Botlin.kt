@@ -14,11 +14,12 @@ import sun.plugin.dom.exception.InvalidStateException
 
 class Botlin(private var storage: BotStorage = MemoryStorage()) : Storable by storage {
     private var engine: BotEngine? = null
-    private val messagePipeline = BotMessagePipeline()
+    val pipelines = Pipelines().apply { add(BotMessagePipeline()) }
 
-    fun <TConf : Any, TFactory : BotFeatureFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotFeature {
+    inline fun <reified TContext, TConf : Any, TFactory : BotFeatureFactory<TContext, TConf>> install(factory: TFactory, noinline configure: TConf.() -> Unit = {}): BotFeature<TContext> {
         val feature = factory.create(configure)
-        feature.install(messagePipeline)
+        val pipeline = pipelines.get<TContext>()
+        feature.install(pipeline)
         return feature
     }
 
@@ -37,8 +38,8 @@ class Botlin(private var storage: BotStorage = MemoryStorage()) : Storable by st
         return storage
     }
 
-    fun intercept(messageInterceptor: MessageInterceptor) {
-        messagePipeline.intercept(messageInterceptor)
+    inline fun <reified T> intercept(noinline interceptor: PipelineInterceptor<T>) {
+        pipelines.get<T>().intercept(interceptor)
     }
 
     fun start() {
@@ -49,7 +50,7 @@ class Botlin(private var storage: BotStorage = MemoryStorage()) : Storable by st
 
             launch {
                 engine?.start {
-                    messagePipeline.execute(it)
+                    pipelines.get<BotMessage>().execute(it)
                 }
             }
             while (true) {

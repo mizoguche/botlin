@@ -18,13 +18,13 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 
 class BotlinSpec : Spek({
-    val engine = mockk<BotEngine>()
-    val engineFactory = spyk<BotEngineFactory<Unit>>()
-
-    every { engineFactory.create(any()) } returns engine
-    coEvery { engine.start(any()) } returns Unit
-
     describe("Botlin#install(BotEngine)") {
+        val engine = mockk<BotEngine>()
+        val engineFactory = spyk<BotEngineFactory<Unit>>()
+
+        every { engineFactory.create(any()) } returns engine
+        coEvery { engine.start(any()) } returns Unit
+
         on("install BotEngine") {
             it("should call BotEngine#start") {
                 startBotlin {
@@ -58,9 +58,9 @@ class BotlinSpec : Spek({
     }
 
     describe("Botlin#install(BotFeature)") {
-        val feature = mockk<BotFeature>()
-        val featureFactory = object : BotFeatureFactory<Unit> {
-            override fun create(configure: Unit.() -> Unit): BotFeature {
+        val feature = mockk<BotFeature<BotMessage>>()
+        val featureFactory = object : BotFeatureFactory<BotMessage, Unit> {
+            override fun create(configure: Unit.() -> Unit): BotFeature<BotMessage> {
                 return feature
             }
         }
@@ -70,7 +70,7 @@ class BotlinSpec : Spek({
         on("install") {
             it("should send message to interceptor of installed feature") {
                 startBotlin {
-                    install(engineFactory)
+                    install(MockEngineFactory())
                     install(featureFactory)
                 }
 
@@ -92,6 +92,7 @@ class BotlinSpec : Spek({
         on("install") {
             it("should start storage") {
                 startBotlin {
+                    install(MockEngineFactory())
                     install(storageFactory)
                 }
 
