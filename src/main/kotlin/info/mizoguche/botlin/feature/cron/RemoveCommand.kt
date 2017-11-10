@@ -1,10 +1,7 @@
 package info.mizoguche.botlin.feature.cron
 
-import info.mizoguche.botlin.BotlinFeatureId
-import info.mizoguche.botlin.feature.command.BotlinCommand
-
-class RemoveCommand(val id: BotlinFeatureId, val command: BotlinCommand, val scheduleId: Int) : Subcommand {
-    override fun execute() {
+//class RemoveCommand(val id: BotlinFeatureId, val command: BotlinCommand, val scheduleId: Int) : Subcommand {
+//    override fun execute() {
 //        val storeGetReq = BotlinStoreGetRequest(id) {
 //            val schedules = gson.fromJson(it, Schedules::class.java) ?: Schedules(mutableListOf())
 //            schedules.schedules.removeIf { it.id == scheduleId }
@@ -20,5 +17,5 @@ class RemoveCommand(val id: BotlinFeatureId, val command: BotlinCommand, val sch
 //                    """.trimMargin())
 //        }
 //        command.botlin.publish(storeGetReq)
-    }
-}
+//    }
+//}

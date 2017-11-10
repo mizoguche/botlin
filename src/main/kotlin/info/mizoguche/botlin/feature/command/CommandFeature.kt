@@ -4,7 +4,6 @@ import info.mizoguche.botlin.Botlin
 import info.mizoguche.botlin.BotlinFeature
 import info.mizoguche.botlin.BotlinFeatureFactory
 import info.mizoguche.botlin.BotlinFeatureId
-import info.mizoguche.botlin.publishing
 
 data class CommandFeatureRegister(val feature: CommandFeature)
 abstract class CommandFeature : BotlinFeature {
@@ -41,7 +40,7 @@ abstract class CommandFeature : BotlinFeature {
 class CommandHelp(conf: Configuration) : CommandFeature() {
     private val help = StringBuilder()
 
-    override fun onStart(botlin: Botlin) {
+//    override fun onStart(botlin: Botlin) {
 //        botlin.on<CommandFeatureRegister>(publishing {
 //            help.append("""
 //                |${it.feature.command}: ${it.feature.description}
@@ -50,7 +49,7 @@ class CommandHelp(conf: Configuration) : CommandFeature() {
 //                |
 //                """.trimMargin())
 //        })
-    }
+//    }
 
     override fun onCommandPublishing(command: BotlinCommand) {
         command.msgEvent.reply("```\n${help.replace(Regex.fromLiteral("<botlin>"), "${command.msgEvent.session.mentionPrefix}").trimEnd('\n')}```")

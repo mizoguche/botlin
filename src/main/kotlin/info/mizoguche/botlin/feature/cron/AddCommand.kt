@@ -1,10 +1,7 @@
 package info.mizoguche.botlin.feature.cron
 
-import info.mizoguche.botlin.BotlinFeatureId
-import info.mizoguche.botlin.feature.command.BotlinCommand
-
-class AddCommand(val id: BotlinFeatureId, val command: BotlinCommand, val schedule: Cron.Schedule) : Subcommand {
-    override fun execute() {
+//class AddCommand(val id: BotlinFeatureId, val command: BotlinCommand, val schedule: Cron.Schedule) : Subcommand {
+//    override fun execute() {
 //        val storeGetReq = BotlinStoreGetRequest(id) {
 //            val schedules = gson.fromJson(it, Schedules::class.java) ?: Schedules(mutableListOf())
 //            schedules.schedules.add(schedule)
@@ -20,5 +17,5 @@ class AddCommand(val id: BotlinFeatureId, val command: BotlinCommand, val schedu
 //                    """.trimMargin())
 //        }
 //        command.botlin.publish(storeGetReq)
-    }
-}
+//    }
+//}

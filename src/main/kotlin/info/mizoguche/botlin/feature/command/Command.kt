@@ -5,7 +5,6 @@ import info.mizoguche.botlin.BotlinFeature
 import info.mizoguche.botlin.BotlinFeatureFactory
 import info.mizoguche.botlin.BotlinFeatureId
 import info.mizoguche.botlin.BotlinMessageEvent
-import info.mizoguche.botlin.publishing
 
 data class BotlinCommand(val botlin: Botlin, val msgEvent: BotlinMessageEvent) {
     val command: String

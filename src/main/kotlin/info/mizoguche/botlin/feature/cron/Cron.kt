@@ -61,24 +61,24 @@ class Cron : CommandFeature() {
     }
 
     private fun parse(command: BotlinCommand): Subcommand {
-        if (command.args == "list") {
-            return ListCommand(id, command)
-        }
-
-        val matcherAdd = ADD_COMMAND_PATTERN.matcher(command.args)
-        if (matcherAdd.matches()) {
-            val cron = matcherAdd.group(1)
-            val com = "${command.msgEvent.session.mentionPrefix} ${matcherAdd.group(2)}"
-            val schedule = Schedule(createScheduleId(), command.msgEvent.channelId, cron, com)
-            return AddCommand(id, command, schedule)
-        }
-
-        val matcherRemove = REMOVE_COMMAND_PATTERN.matcher(command.args)
-        if (matcherRemove.matches()) {
-            val scheduleId = matcherRemove.group(1).toInt()
-            return RemoveCommand(id, command, scheduleId)
-        }
-
+//        if (command.args == "list") {
+//            return ListCommand(id, command)
+//        }
+//
+//        val matcherAdd = ADD_COMMAND_PATTERN.matcher(command.args)
+//        if (matcherAdd.matches()) {
+//            val cron = matcherAdd.group(1)
+//            val com = "${command.msgEvent.session.mentionPrefix} ${matcherAdd.group(2)}"
+//            val schedule = Schedule(createScheduleId(), command.msgEvent.channelId, cron, com)
+//            return AddCommand(id, command, schedule)
+//        }
+//
+//        val matcherRemove = REMOVE_COMMAND_PATTERN.matcher(command.args)
+//        if (matcherRemove.matches()) {
+//            val scheduleId = matcherRemove.group(1).toInt()
+//            return RemoveCommand(id, command, scheduleId)
+//        }
+//
         throw IllegalArgumentException("invalid args: ${command.args}")
     }
 
@@ -91,7 +91,7 @@ class Cron : CommandFeature() {
         }
     }
 
-    override fun onStart(botlin: Botlin) {
+//    override fun onStart(botlin: Botlin) {
 //        val storeGetReq = BotlinStoreGetRequest(id) {
 //            val schedules = gson.fromJson<Schedules>(it, Schedules::class.java) ?: Schedules(mutableListOf())
 //            schedules.schedules.forEach {
@@ -99,7 +99,7 @@ class Cron : CommandFeature() {
 //            }
 //        }
 //        botlin.publish(storeGetReq)
-    }
+//    }
 
     override val id: BotlinFeatureId
         get() = BotlinFeatureId("Cron")
