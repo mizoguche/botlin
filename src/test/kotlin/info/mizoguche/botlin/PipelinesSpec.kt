@@ -17,4 +17,15 @@ class PipelinesSpec : Spek({
             }
         }
     }
+
+    describe("Pipelines#get") {
+        on("get pipeline") {
+            it("should return pipeline") {
+                val pipelines = Pipelines()
+                val pipeline = BotMessagePipeline()
+                pipelines.add(pipeline)
+                assertEquals(pipeline, pipelines.get<BotMessage>())
+            }
+        }
+    }
 })
