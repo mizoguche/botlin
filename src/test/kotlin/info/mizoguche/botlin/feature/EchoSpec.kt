@@ -2,7 +2,6 @@ package info.mizoguche.botlin.feature
 
 import info.mizoguche.botlin.BotMessage
 import info.mizoguche.botlin.MockEngineFactory
-import info.mizoguche.botlin.botlin
 import info.mizoguche.botlin.feature.echo.Echo
 import info.mizoguche.botlin.startBotlin
 import io.mockk.every

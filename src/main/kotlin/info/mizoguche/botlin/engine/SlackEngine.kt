@@ -7,6 +7,7 @@ import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory
 import info.mizoguche.botlin.BotMessage
 import info.mizoguche.botlin.BotMessageSender
 import info.mizoguche.botlin.BotMessageSession
+import info.mizoguche.botlin.Pipelines
 import kotlinx.coroutines.experimental.launch
 
 class BotSlackMessageSender(private val user: SlackUser) : BotMessageSender {
@@ -48,13 +49,13 @@ class BotSlackMessage(private val slackSession: SlackSession, private val event:
 class SlackEngine(val configuration: Configuration) : BotEngine {
     private var slackSession: SlackSession? = null
 
-    suspend override fun start(handler: BotMessageHandler) {
+    suspend override fun start(pipelines: Pipelines) {
         val session = SlackSessionFactory.createWebSocketSlackSession(configuration.token)
         slackSession = session
         session.connect()
         session.addMessagePostedListener { event, sess ->
             if (event.sender.id != session.sessionPersona().id) {
-                launch { handler.invoke(BotSlackMessage(sess, event)) }
+                launch { pipelines[BotMessage::class].execute(BotSlackMessage(sess, event)) }
             }
         }
     }

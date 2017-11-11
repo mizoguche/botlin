@@ -47,9 +47,7 @@ class Botlin(private var storage: BotStorage = MemoryStorage()) : Storable by st
             }
 
             launch {
-                engine?.start {
-                    pipelines[BotMessage::class].execute(it)
-                }
+                engine?.start(pipelines)
             }
             while (true) {
                 Thread.sleep(1000)

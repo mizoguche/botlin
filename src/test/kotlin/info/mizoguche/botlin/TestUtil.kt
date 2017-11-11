@@ -2,7 +2,6 @@ package info.mizoguche.botlin
 
 import info.mizoguche.botlin.engine.BotEngine
 import info.mizoguche.botlin.engine.BotEngineFactory
-import info.mizoguche.botlin.engine.BotMessageHandler
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
@@ -18,18 +17,18 @@ fun startBotlin(configure: Botlin.() -> Unit): Botlin {
 }
 
 class MockEngine : BotEngine {
-    var handler: BotMessageHandler? = null
+    var pipelines: Pipelines? = null
 
-    suspend override fun start(handler: BotMessageHandler) {
-        this.handler = handler
+    suspend override fun start(pipelines: Pipelines) {
+        this.pipelines = pipelines
     }
 
     override fun stop() {
     }
 
-    fun post(message: BotMessage) {
+    inline fun <reified T : Any> post(message: T) {
         runBlocking {
-            handler?.invoke(message)
+            pipelines?.get(T::class)!!.execute(message)
             delay(100)
         }
     }

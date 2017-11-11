@@ -1,11 +1,9 @@
 package info.mizoguche.botlin.engine
 
-import info.mizoguche.botlin.BotMessage
-
-typealias BotMessageHandler = suspend (BotMessage) -> Unit
+import info.mizoguche.botlin.Pipelines
 
 interface BotEngine {
-    suspend fun start(handler: BotMessageHandler)
+    suspend fun start(pipelines: Pipelines)
     fun stop()
 }
 
