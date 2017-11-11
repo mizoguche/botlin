@@ -1,0 +1,25 @@
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+junitPlatform {
+    filters {
+        engines {
+            include 'spek'
+        }
+    }
+}
+
+repositories {
+    maven { url "http://dl.bintray.com/jetbrains/spek" }
+}
+
+// setup dependencies
+dependencies {
+    testCompile 'org.jetbrains.spek:spek-api:1.1.5'
+    testRuntime 'org.jetbrains.spek:spek-junit-platform-engine:1.1.5'
+    testRuntime 'org.junit.platform:junit-platform-runner:1.0.0'
+
+    compile "org.jetbrains.kotlin:kotlin-reflect"
+    testCompile "org.jetbrains.kotlin:kotlin-test"
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit"
+    testCompile "io.mockk:mockk:1.3"
+}

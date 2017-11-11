@@ -1,36 +1,61 @@
 package info.mizoguche.botlin
 
-class Botlin {
-    private val features = mutableListOf<BotlinFeature>()
-    val subscriptions = mutableMapOf<Class<*>, MutableSet<Any>>()
+import info.mizoguche.botlin.engine.BotEngine
+import info.mizoguche.botlin.engine.BotEngineFactory
+import info.mizoguche.botlin.feature.BotFeature
+import info.mizoguche.botlin.feature.BotFeatureContext
+import info.mizoguche.botlin.feature.BotFeatureFactory
+import info.mizoguche.botlin.storage.BotStorage
+import info.mizoguche.botlin.storage.BotStorageFactory
+import info.mizoguche.botlin.storage.MemoryStorage
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 
-    fun <C : Any, F : BotlinFeature, G : BotlinFeatureFactory<C, F>> install(factory: G, configure: C.() -> Unit = {}): F {
+class BotEngineException(message: String) : Exception(message)
+
+class Botlin(var storage: BotStorage = MemoryStorage()) {
+    private var engine: BotEngine? = null
+    val pipelines = Pipelines()
+
+    fun <TConf, TFactory : BotFeatureFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotFeature {
         val feature = factory.create(configure)
-        features.add(feature)
+        feature.install(BotFeatureContext(feature.id, this))
         return feature
     }
 
-    inline fun <reified T : Any> on(subscriber: BotlinSubscriber<T>) {
-        val clazz = T::class.java
-        subscriptions[clazz]?.add(subscriber) ?: subscriptions.put(clazz, mutableSetOf(subscriber))
+    fun <TConf, TFactory : BotEngineFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotEngine {
+        val engine = factory.create(configure)
+        this.engine = engine
+        return engine
     }
 
-    @Suppress("UNCHECKED_CAST")
-    inline fun <reified T : Any> publish(event: T) {
-        subscriptions[event.javaClass]?.forEach {
-            val subscriber = it as BotlinSubscriber<T>
-            subscriber.onPublishing(event)
-        }
+    fun <TConf, TFactory : BotStorageFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotStorage {
+        this.storage.stop()
+
+        val storage = factory.create(configure)
+        this.storage = storage
+        runBlocking { storage.start() }
+        return storage
+    }
+
+    inline fun <reified T : Any> intercept(noinline interceptor: PipelineInterceptor<T>) {
+        pipelines[T::class].intercept(interceptor)
     }
 
     fun start() {
         try {
-            features.forEach { it.start(this) }
+            if (engine == null) {
+                throw BotEngineException("No engine is installed")
+            }
+
+            launch {
+                engine?.start(pipelines)
+            }
             while (true) {
                 Thread.sleep(1000)
             }
         } finally {
-            features.forEach { it.stop(this) }
+            engine?.stop()
         }
     }
 }
