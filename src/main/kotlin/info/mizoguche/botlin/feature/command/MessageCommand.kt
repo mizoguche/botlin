@@ -3,6 +3,7 @@ package info.mizoguche.botlin.feature.command
 import info.mizoguche.botlin.BotMessage
 import info.mizoguche.botlin.Pipelines
 import info.mizoguche.botlin.feature.BotFeature
+import info.mizoguche.botlin.feature.BotFeatureContext
 import info.mizoguche.botlin.feature.BotFeatureFactory
 import info.mizoguche.botlin.feature.BotFeatureId
 
@@ -30,11 +31,11 @@ class MessageCommand : BotFeature {
     override val id: BotFeatureId
         get() = BotFeatureId("command")
 
-    override fun install(pipelines: Pipelines) {
-        pipelines[BotMessage::class].intercept {
+    override fun install(context: BotFeatureContext) {
+        context.pipelines[BotMessage::class].intercept {
             if (it.isMention) {
                 val command = BotMessageCommandImpl(it)
-                pipelines[BotMessageCommand::class].execute(command)
+                context.pipelines[BotMessageCommand::class].execute(command)
             }
         }
     }

@@ -3,23 +3,23 @@ package info.mizoguche.botlin
 import info.mizoguche.botlin.engine.BotEngine
 import info.mizoguche.botlin.engine.BotEngineFactory
 import info.mizoguche.botlin.feature.BotFeature
+import info.mizoguche.botlin.feature.BotFeatureContext
 import info.mizoguche.botlin.feature.BotFeatureFactory
 import info.mizoguche.botlin.storage.BotStorage
 import info.mizoguche.botlin.storage.BotStorageFactory
 import info.mizoguche.botlin.storage.MemoryStorage
-import info.mizoguche.botlin.storage.Storable
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 
 class BotEngineException(message: String) : Exception(message)
 
-class Botlin(private var storage: BotStorage = MemoryStorage()) : Storable by storage {
+class Botlin(var storage: BotStorage = MemoryStorage()) {
     private var engine: BotEngine? = null
     val pipelines = Pipelines()
 
     fun <TConf, TFactory : BotFeatureFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotFeature {
         val feature = factory.create(configure)
-        feature.install(pipelines)
+        feature.install(BotFeatureContext(feature.id, this))
         return feature
     }
 
