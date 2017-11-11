@@ -2,6 +2,7 @@ package info.mizoguche.botlin.feature
 
 import info.mizoguche.botlin.BotMessage
 import info.mizoguche.botlin.MockEngineFactory
+import info.mizoguche.botlin.createMockCommand
 import info.mizoguche.botlin.feature.echo.Echo
 import info.mizoguche.botlin.startBotlin
 import io.mockk.every
@@ -17,9 +18,12 @@ class EchoSpec : Spek({
         on("install") {
             it("should intercept BotMessage") {
                 val message = mockk<BotMessage>()
-                val body = "test"
-                every { message.message } returns body
-                every { message.reply(body) } returns Unit
+                val command = createMockCommand(
+                        command = "echo",
+                        args = "body",
+                        message = message
+                )
+                every { message.reply(command.args) } returns Unit
 
                 val engineFactory = MockEngineFactory()
                 startBotlin {
@@ -27,9 +31,9 @@ class EchoSpec : Spek({
                     install(Echo)
                 }
 
-                engineFactory.engine.post(message)
+                engineFactory.engine.post(command)
 
-                verify { message.reply(body) }
+                verify { message.reply(command.args) }
             }
         }
     }
