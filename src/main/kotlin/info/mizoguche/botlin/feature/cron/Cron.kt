@@ -74,17 +74,7 @@ class Cron(configuration: Configuration) : BotFeature {
             }
             val matcherRemove = REMOVE_COMMAND_PATTERN.matcher(it.args)
             if (matcherRemove.matches()) {
-                val scheduleId = matcherRemove.group(1).toInt()
-                val schedules = currentSchedules(context)
-                schedules.schedules.removeIf { it.id == scheduleId }
-                scheduler.stop(scheduleId)
-                storeSchedules(context, schedules)
-                it.message.reply("""
-                    |Removed schedule.
-                    |
-                    |Current schedules:
-                    |$schedules
-                    """.trimMargin())
+                remove(context, matcherRemove, it)
                 return@intercept
             }
 
@@ -127,6 +117,29 @@ class Cron(configuration: Configuration) : BotFeature {
                     |Current schedules:
                     |$schedules
                     """.trimMargin())
+    }
+
+    private fun remove(context: BotFeatureContext, matcher: Matcher, command: BotMessageCommand) {
+        val scheduleId = matcher.group(1).toInt()
+        val schedules = currentSchedules(context)
+        schedules.schedules.removeIf { it.id == scheduleId }
+        storeSchedules(context, schedules)
+        if (scheduler.isStarted(scheduleId)) {
+            scheduler.stop(scheduleId)
+            command.message.reply("""
+                    |Removed schedule.
+                    |
+                    |Current schedules:
+                    |$schedules
+                    """.trimMargin())
+        } else {
+            command.message.reply("""
+                    |Schedule not found.
+                    |
+                    |Current schedules:
+                    |$schedules
+                    """.trimMargin())
+        }
     }
 
     class Configuration {

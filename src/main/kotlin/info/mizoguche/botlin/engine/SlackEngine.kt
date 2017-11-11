@@ -1,6 +1,6 @@
 package info.mizoguche.botlin.engine
 
-import com.ullink.slack.simpleslackapi.SlackChannel
+import com.ullink.slack.simpleslackapi.SlackPreparedMessage
 import com.ullink.slack.simpleslackapi.SlackSession
 import com.ullink.slack.simpleslackapi.SlackUser
 import com.ullink.slack.simpleslackapi.events.SlackMessagePosted
@@ -63,8 +63,16 @@ class SlackEngine(val configuration: Configuration) : BotEngine {
         }
 
         pipelines[BotMessageRequest::class].intercept {
+            if (it.engineId != id) {
+                return@intercept
+            }
+
             val channel = session.findChannelById(it.channelId)
-            session.sendMessage(channel, it.message)
+            val message = SlackPreparedMessage.Builder()
+                    .withLinkNames(true)
+                    .withMessage(it.message)
+                    .build()
+            session.sendMessage(channel, message)
         }
     }
 

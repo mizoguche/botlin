@@ -5,6 +5,7 @@ import it.sauronsoftware.cron4j.Scheduler
 interface CronScheduler {
     fun start(schedule: Schedule, action: () -> Unit)
     fun stop(scheduleId: Int)
+    fun isStarted(scheduleId: Int): Boolean
 }
 
 class Cron4jScheduler : CronScheduler {
@@ -20,6 +21,11 @@ class Cron4jScheduler : CronScheduler {
 
     override fun stop(scheduleId: Int) {
         val scheduler = startedSchedules[scheduleId] ?: return
+        startedSchedules.remove(scheduleId)
         scheduler.stop()
+    }
+
+    override fun isStarted(scheduleId: Int): Boolean {
+        return startedSchedules.containsKey(scheduleId)
     }
 }
