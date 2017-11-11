@@ -2,12 +2,13 @@ package info.mizoguche.botlin
 
 import kotlin.reflect.KClass
 
-class Pipelines(val pipelines: MutableMap<KClass<*>, Pipeline<*>> = mutableMapOf()) : Collection<Pipeline<*>> by pipelines.values {
-    inline fun <reified T : Any> add(pipeline: Pipeline<T>) {
-        pipelines.put(T::class, pipeline)
-    }
-
-    inline fun <reified T> get(): Pipeline<T> {
-        return pipelines[T::class] as Pipeline<T>
+class Pipelines(val pipelines: MutableMap<KClass<*>, Any> = mutableMapOf()) {
+    inline operator fun <T : Any> get(key: KClass<T>): Pipeline<T> {
+        if (pipelines.containsKey(key)) {
+            return pipelines[key] as Pipeline<T>
+        }
+        val pipeline =  Pipeline<T>()
+        pipelines[key] = pipeline
+        return pipeline
     }
 }

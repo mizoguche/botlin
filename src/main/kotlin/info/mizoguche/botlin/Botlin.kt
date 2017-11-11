@@ -10,15 +10,14 @@ import info.mizoguche.botlin.storage.MemoryStorage
 import info.mizoguche.botlin.storage.Storable
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
-import sun.plugin.dom.exception.InvalidStateException
 
 class Botlin(private var storage: BotStorage = MemoryStorage()) : Storable by storage {
     private var engine: BotEngine? = null
-    val pipelines = Pipelines().apply { add(BotMessagePipeline()) }
+    val pipelines = Pipelines()
 
-    inline fun <reified TContext, TConf : Any, TFactory : BotFeatureFactory<TContext, TConf>> install(factory: TFactory, noinline configure: TConf.() -> Unit = {}): BotFeature<TContext> {
+    inline fun <reified TContext : Any, TConf : Any, TFactory : BotFeatureFactory<TContext, TConf>> install(factory: TFactory, noinline configure: TConf.() -> Unit = {}): BotFeature<TContext> {
         val feature = factory.create(configure)
-        val pipeline = pipelines.get<TContext>()
+        val pipeline = pipelines[TContext::class]
         feature.install(pipeline)
         return feature
     }
@@ -38,19 +37,19 @@ class Botlin(private var storage: BotStorage = MemoryStorage()) : Storable by st
         return storage
     }
 
-    inline fun <reified T> intercept(noinline interceptor: PipelineInterceptor<T>) {
-        pipelines.get<T>().intercept(interceptor)
+    inline fun <reified T : Any> intercept(noinline interceptor: PipelineInterceptor<T>) {
+        pipelines[T::class].intercept(interceptor)
     }
 
     fun start() {
         try {
             if (engine == null) {
-                throw InvalidStateException("No engine is installed")
+                throw Exception("No engine is installed")
             }
 
             launch {
                 engine?.start {
-                    pipelines.get<BotMessage>().execute(it)
+                    pipelines[BotMessage::class].execute(it)
                 }
             }
             while (true) {

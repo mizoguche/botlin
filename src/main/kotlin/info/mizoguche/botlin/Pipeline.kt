@@ -11,7 +11,7 @@ class PipelineContext<out TContext>(private val interceptors: List<PipelineInter
     }
 }
 
-abstract class Pipeline<TContext> {
+class Pipeline<TContext> {
     private val contextInterceptors = mutableListOf<PipelineInterceptor<TContext>>()
     val interceptors: List<PipelineInterceptor<TContext>>
         get() = contextInterceptors
@@ -27,4 +27,3 @@ abstract class Pipeline<TContext> {
 }
 
 typealias MessageInterceptor = PipelineInterceptor<BotMessage>
-class BotMessagePipeline : Pipeline<BotMessage>()
