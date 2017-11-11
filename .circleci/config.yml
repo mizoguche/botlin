@@ -21,9 +21,9 @@ jobs:
           name: Run Static Analysis
           command: ./gradlew detektCheck
 
-#      - run:
-#          name: Run Tests
-#          command: ./gradlew test
+      - run:
+          name: Run Tests
+          command: ./gradlew test
 
       - save_cache:
           key: botlin-{{ checksum "build.gradle" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
@@ -35,9 +35,3 @@ jobs:
       - run:
           name: Build
           command: ./gradlew build
-
-#      - deploy:
-#          command: |
-#            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-#            # TODO: Deploy to jCenter
-#            fi
