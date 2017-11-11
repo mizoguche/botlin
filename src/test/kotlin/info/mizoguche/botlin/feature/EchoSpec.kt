@@ -3,6 +3,7 @@ package info.mizoguche.botlin.feature
 import info.mizoguche.botlin.BotMessage
 import info.mizoguche.botlin.MockEngineFactory
 import info.mizoguche.botlin.createMockCommand
+import info.mizoguche.botlin.feature.command.MessageCommand
 import info.mizoguche.botlin.feature.echo.Echo
 import info.mizoguche.botlin.startBotlin
 import io.mockk.every
@@ -28,6 +29,7 @@ class EchoSpec : Spek({
                 val engineFactory = MockEngineFactory()
                 startBotlin {
                     install(engineFactory)
+                    install(MessageCommand)
                     install(Echo)
                 }
 

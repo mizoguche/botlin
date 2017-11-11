@@ -20,9 +20,9 @@ class Pipeline<TContext> {
         contextInterceptors.add(interceptor)
     }
 
-    inline fun execute(context: TContext): Job {
-        val context = PipelineContext(interceptors, context)
-        return launch { context.proceed() }
+    fun execute(context: TContext): Job {
+        val pipelineContext = PipelineContext(interceptors, context)
+        return launch { pipelineContext.proceed() }
     }
 }
 

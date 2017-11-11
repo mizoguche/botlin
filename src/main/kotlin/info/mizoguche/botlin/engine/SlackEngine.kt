@@ -57,9 +57,7 @@ class SlackEngine(configuration: Configuration) : BotEngine {
     suspend override fun start(pipelines: Pipelines) {
         session.connect()
         session.addMessagePostedListener { event, sess ->
-            if (event.sender.id != session.sessionPersona().id) {
-                launch { pipelines[BotMessage::class].execute(BotSlackMessage(id, sess, event)) }
-            }
+            launch { pipelines[BotMessage::class].execute(BotSlackMessage(id, sess, event)) }
         }
 
         pipelines[BotMessageRequest::class].intercept {

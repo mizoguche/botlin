@@ -17,8 +17,8 @@ class RedisStorage(private val configuration: Configuration) : BotStorage {
         jedis?.disconnect()
     }
 
-    override fun set(id: BotFeatureId, body: String) {
-        jedis?.set(id.value, body)
+    override fun set(id: BotFeatureId, content: String) {
+        jedis?.set(id.value, content)
     }
 
     override fun get(id: BotFeatureId): String? {

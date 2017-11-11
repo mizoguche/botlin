@@ -13,8 +13,8 @@ class MemoryStorage : BotStorage {
         map.clear()
     }
 
-    override fun set(id: BotFeatureId, body: String) {
-        map.put(id, body)
+    override fun set(id: BotFeatureId, content: String) {
+        map.put(id, content)
     }
 
     override fun get(id: BotFeatureId): String? {

@@ -18,6 +18,7 @@ import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
+import org.jetbrains.spek.api.dsl.xdescribe
 import org.junit.runner.RunWith
 
 @RunWith(MockKJUnit4Runner::class)
@@ -40,7 +41,8 @@ class BotlinSpec : Spek({
         }
     }
 
-    describe("Botlin#intercept") {
+    describe("Botlin#intercept")
+    {
         val runnable = mockk<Runnable>()
         val interceptor: MessageInterceptor = { runnable.run() }
         every { runnable.run() } returns Unit
@@ -61,7 +63,7 @@ class BotlinSpec : Spek({
         }
     }
 
-    describe("Botlin#install(BotFeature)") {
+    xdescribe("Botlin#install(BotFeature)") {
         val feature = mockk<BotFeature>()
         val featureFactory = object : BotFeatureFactory<Unit> {
             override fun create(configure: Unit.() -> Unit): BotFeature {
