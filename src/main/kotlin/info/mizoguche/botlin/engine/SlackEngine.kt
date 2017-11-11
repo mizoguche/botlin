@@ -1,10 +1,12 @@
 package info.mizoguche.botlin.engine
 
+import com.ullink.slack.simpleslackapi.SlackChannel
 import com.ullink.slack.simpleslackapi.SlackSession
 import com.ullink.slack.simpleslackapi.SlackUser
 import com.ullink.slack.simpleslackapi.events.SlackMessagePosted
 import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory
 import info.mizoguche.botlin.BotMessage
+import info.mizoguche.botlin.BotMessageRequest
 import info.mizoguche.botlin.BotMessageSender
 import info.mizoguche.botlin.BotMessageSession
 import info.mizoguche.botlin.Pipelines
@@ -26,7 +28,7 @@ class BotSlackSession(private val slackSession: SlackSession) : BotMessageSessio
         get() = slackSession.sessionPersona().userName
 }
 
-class BotSlackMessage(private val slackSession: SlackSession, private val event: SlackMessagePosted) : BotMessage {
+class BotSlackMessage(override val engineId: BotEngineId, private val slackSession: SlackSession, private val event: SlackMessagePosted) : BotMessage {
     private val messageSender = BotSlackMessageSender(event.sender)
     private val botSession = BotSlackSession(slackSession)
 
@@ -47,21 +49,27 @@ class BotSlackMessage(private val slackSession: SlackSession, private val event:
 }
 
 class SlackEngine(val configuration: Configuration) : BotEngine {
-    private var slackSession: SlackSession? = null
+    override val id: BotEngineId
+        get() = BotEngineId("slack")
+
+    private var session = SlackSessionFactory.createWebSocketSlackSession(configuration.token)
 
     suspend override fun start(pipelines: Pipelines) {
-        val session = SlackSessionFactory.createWebSocketSlackSession(configuration.token)
-        slackSession = session
         session.connect()
         session.addMessagePostedListener { event, sess ->
             if (event.sender.id != session.sessionPersona().id) {
-                launch { pipelines[BotMessage::class].execute(BotSlackMessage(sess, event)) }
+                launch { pipelines[BotMessage::class].execute(BotSlackMessage(id, sess, event)) }
             }
+        }
+
+        pipelines[BotMessageRequest::class].intercept {
+            val channel = session.findChannelById(it.channelId)
+            session.sendMessage(channel, it.message)
         }
     }
 
     override fun stop() {
-        slackSession?.disconnect()
+        session.disconnect()
     }
 
     class Configuration {

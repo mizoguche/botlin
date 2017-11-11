@@ -1,6 +1,9 @@
 package info.mizoguche.botlin
 
+import info.mizoguche.botlin.engine.BotEngineId
+
 interface BotMessage {
+    val engineId: BotEngineId
     val channelId: String
 
     /**
@@ -29,4 +32,4 @@ interface BotMessageSession {
         get() = "$mentionChar$userName"
 }
 
-data class BotMessageRequest(val channelId: String, val message: String)
+data class BotMessageRequest(val engineId: BotEngineId, val channelId: String, val message: String)
