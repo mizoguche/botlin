@@ -2,7 +2,7 @@ package info.mizoguche.botlin
 
 import info.mizoguche.botlin.engine.BotEngine
 import info.mizoguche.botlin.engine.BotEngineFactory
-import info.mizoguche.botlin.feature.command.BotCommand
+import info.mizoguche.botlin.feature.command.BotMessageCommand
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
@@ -17,8 +17,8 @@ fun startBotlin(configure: Botlin.() -> Unit): Botlin {
     return botlin
 }
 
-fun createMockCommand(command: String, args: String, message: BotMessage): BotCommand {
-    return object : BotCommand {
+fun createMockCommand(command: String, args: String, message: BotMessage): BotMessageCommand {
+    return object : BotMessageCommand {
         override val command: String
             get() = command
         override val args: String

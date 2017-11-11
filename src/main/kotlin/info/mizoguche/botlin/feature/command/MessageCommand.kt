@@ -6,13 +6,13 @@ import info.mizoguche.botlin.feature.BotFeature
 import info.mizoguche.botlin.feature.BotFeatureFactory
 import info.mizoguche.botlin.feature.BotFeatureId
 
-interface BotCommand {
+interface BotMessageCommand {
     val command: String
     val args: String
     val message: BotMessage
 }
 
-data class BotMessageCommand(override val message: BotMessage) : BotCommand {
+data class BotMessageCommandImpl(override val message: BotMessage) : BotMessageCommand {
     override val command: String = if (message.message.indexOf(" ") > -1) {
         message.message.split(" ")[0]
     } else {
@@ -26,22 +26,22 @@ data class BotMessageCommand(override val message: BotMessage) : BotCommand {
     }
 }
 
-class Command : BotFeature {
+class MessageCommand : BotFeature {
     override val id: BotFeatureId
         get() = BotFeatureId("command")
 
     override fun install(pipelines: Pipelines) {
         pipelines[BotMessage::class].intercept {
             if (it.isMention) {
-                val command = BotMessageCommand(it)
-                pipelines[BotCommand::class].execute(command)
+                val command = BotMessageCommandImpl(it)
+                pipelines[BotMessageCommand::class].execute(command)
             }
         }
     }
 
     companion object Factory : BotFeatureFactory<Unit> {
         override fun create(configure: Unit.() -> Unit): BotFeature {
-            return Command()
+            return MessageCommand()
         }
     }
 }
