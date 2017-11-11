@@ -1,14 +1,14 @@
 package info.mizoguche.botlin.feature
 
-import info.mizoguche.botlin.Pipeline
+import info.mizoguche.botlin.Pipelines
 
 data class BotFeatureId(val value: String)
 
-interface BotFeature<T> {
+interface BotFeature {
     val id: BotFeatureId
-    fun install(pipeline: Pipeline<T>)
+    fun install(pipelines: Pipelines)
 }
 
-interface BotFeatureFactory<T, out C : Any> {
-    fun create(configure: C.() -> Unit = {}): BotFeature<T>
+interface BotFeatureFactory<out C : Any> {
+    fun create(configure: C.() -> Unit = {}): BotFeature
 }

@@ -58,9 +58,9 @@ class BotlinSpec : Spek({
     }
 
     describe("Botlin#install(BotFeature)") {
-        val feature = mockk<BotFeature<BotMessage>>()
-        val featureFactory = object : BotFeatureFactory<BotMessage, Unit> {
-            override fun create(configure: Unit.() -> Unit): BotFeature<BotMessage> {
+        val feature = mockk<BotFeature>()
+        val featureFactory = object : BotFeatureFactory<Unit> {
+            override fun create(configure: Unit.() -> Unit): BotFeature {
                 return feature
             }
         }

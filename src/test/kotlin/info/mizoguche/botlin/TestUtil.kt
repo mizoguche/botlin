@@ -3,15 +3,18 @@ package info.mizoguche.botlin
 import info.mizoguche.botlin.engine.BotEngine
 import info.mizoguche.botlin.engine.BotEngineFactory
 import info.mizoguche.botlin.engine.BotMessageHandler
+import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 
-fun startBotlin(configure: Botlin.() -> Unit) {
+fun startBotlin(configure: Botlin.() -> Unit): Botlin {
+    val botlin = botlin(configure)
     val job = launch {
-        botlin(configure).start()
+        botlin.start()
     }
     Thread.sleep(100)
     job.cancel()
+    return botlin
 }
 
 class MockEngine : BotEngine {
@@ -25,7 +28,10 @@ class MockEngine : BotEngine {
     }
 
     fun post(message: BotMessage) {
-        runBlocking { handler?.invoke(message) }
+        runBlocking {
+            handler?.invoke(message)
+            delay(100)
+        }
     }
 }
 

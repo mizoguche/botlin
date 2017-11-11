@@ -15,20 +15,19 @@ class Botlin(private var storage: BotStorage = MemoryStorage()) : Storable by st
     private var engine: BotEngine? = null
     val pipelines = Pipelines()
 
-    inline fun <reified TContext : Any, TConf : Any, TFactory : BotFeatureFactory<TContext, TConf>> install(factory: TFactory, noinline configure: TConf.() -> Unit = {}): BotFeature<TContext> {
+    fun <TConf, TFactory : BotFeatureFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotFeature {
         val feature = factory.create(configure)
-        val pipeline = pipelines[TContext::class]
-        feature.install(pipeline)
+        feature.install(pipelines)
         return feature
     }
 
-    fun <TConf : Any, TFactory : BotEngineFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotEngine {
+    fun <TConf, TFactory : BotEngineFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotEngine {
         val engine = factory.create(configure)
         this.engine = engine
         return engine
     }
 
-    fun <TConf : Any, TFactory : BotStorageFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotStorage {
+    fun <TConf, TFactory : BotStorageFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotStorage {
         this.storage.stop()
 
         val storage = factory.create(configure)
