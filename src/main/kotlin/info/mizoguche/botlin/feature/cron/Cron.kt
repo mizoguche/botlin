@@ -28,9 +28,8 @@ data class Schedules(val schedules: MutableList<Schedule>) {
     }
 }
 
-private val ADD_COMMAND_PATTERN = Pattern.compile("add \"(.+? .+? .+? .+? .+?)\" (.+)")
-private val REMOVE_COMMAND_PATTERN = Pattern.compile("remove (\\d+?)")
-private val MAX_SCHEDULES = 10000
+private val addCommandPattern = Pattern.compile("add \"(.+? .+? .+? .+? .+?)\" (.+)")
+private val removeCommandPattern = Pattern.compile("remove (\\d+?)")
 
 class Cron(configuration: Configuration) : BotFeature {
     private val scheduler = configuration.scheduler
@@ -38,22 +37,6 @@ class Cron(configuration: Configuration) : BotFeature {
 
     override val id: BotFeatureId
         get() = BotFeatureId("cron")
-
-    private val schedulers: Map<Int, Scheduler> = HashMap()
-    private val random: Random = Random()
-
-    private fun createScheduleId(): Int {
-        if (schedulers.count() == MAX_SCHEDULES) {
-            throw IllegalStateException("schedule count is at capacity")
-        }
-
-        var idCandidate = random.nextInt(10000)
-        while (schedulers.containsKey(idCandidate)) {
-            idCandidate = random.nextInt(10000)
-        }
-
-        return idCandidate
-    }
 
     override fun install(context: BotFeatureContext) {
         context.pipelines[BotMessageCommand::class].intercept {
@@ -67,12 +50,12 @@ class Cron(configuration: Configuration) : BotFeature {
                 return@intercept
             }
 
-            val matcherAdd = ADD_COMMAND_PATTERN.matcher(it.args)
+            val matcherAdd = addCommandPattern.matcher(it.args)
             if (matcherAdd.matches()) {
                 add(context, matcherAdd, it)
                 return@intercept
             }
-            val matcherRemove = REMOVE_COMMAND_PATTERN.matcher(it.args)
+            val matcherRemove = removeCommandPattern.matcher(it.args)
             if (matcherRemove.matches()) {
                 remove(context, matcherRemove, it)
                 return@intercept
@@ -103,7 +86,7 @@ class Cron(configuration: Configuration) : BotFeature {
     private fun add(context: BotFeatureContext, matcher: Matcher, command: BotMessageCommand) {
         val cron = matcher.group(1)
         val content = "${command.message.session.mentionPrefix} ${matcher.group(2)}"
-        val schedule = Schedule(createScheduleId(), command.message.engineId.value, command.message.channelId, cron, content)
+        val schedule = Schedule(scheduler.createScheduleId(), command.message.engineId.value, command.message.channelId, cron, content)
         val schedules = currentSchedules(context)
         schedules.schedules.add(schedule)
         storeSchedules(context, schedules)

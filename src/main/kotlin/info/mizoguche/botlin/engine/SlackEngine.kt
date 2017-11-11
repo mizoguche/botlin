@@ -48,7 +48,7 @@ class BotSlackMessage(override val engineId: BotEngineId, private val slackSessi
     }
 }
 
-class SlackEngine(val configuration: Configuration) : BotEngine {
+class SlackEngine(configuration: Configuration) : BotEngine {
     override val id: BotEngineId
         get() = BotEngineId("slack")
 

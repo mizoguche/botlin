@@ -9,7 +9,6 @@ import info.mizoguche.botlin.storage.BotStorage
 import info.mizoguche.botlin.storage.BotStorageFactory
 import info.mizoguche.botlin.storage.MemoryStorage
 import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
 
 class BotEngineException(message: String) : Exception(message)
 
@@ -34,7 +33,7 @@ class Botlin(var storage: BotStorage = MemoryStorage()) {
 
         val storage = factory.create(configure)
         this.storage = storage
-        runBlocking { storage.start() }
+        launch { storage.start() }
         return storage
     }
 
@@ -48,9 +47,8 @@ class Botlin(var storage: BotStorage = MemoryStorage()) {
                 throw BotEngineException("No engine is installed")
             }
 
-            launch {
-                engine?.start(pipelines)
-            }
+            launch { engine?.start(pipelines) }
+
             while (true) {
                 Thread.sleep(1000)
             }
