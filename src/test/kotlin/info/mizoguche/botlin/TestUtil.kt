@@ -3,13 +3,8 @@ package info.mizoguche.botlin
 import info.mizoguche.botlin.engine.BotEngine
 import info.mizoguche.botlin.engine.BotEngineFactory
 import info.mizoguche.botlin.engine.BotMessageHandler
-import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
-
-fun join(coroutine: () -> Job) = runBlocking {
-    coroutine().join()
-}
 
 fun startBotlin(configure: Botlin.() -> Unit) {
     val job = launch {
@@ -17,7 +12,6 @@ fun startBotlin(configure: Botlin.() -> Unit) {
     }
     Thread.sleep(100)
     job.cancel()
-
 }
 
 class MockEngine : BotEngine {
