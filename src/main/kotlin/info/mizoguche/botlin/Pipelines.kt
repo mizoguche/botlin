@@ -7,7 +7,7 @@ class Pipelines(val pipelines: MutableMap<KClass<*>, Any> = mutableMapOf()) {
         if (pipelines.containsKey(key)) {
             return pipelines[key] as Pipeline<T>
         }
-        val pipeline =  Pipeline<T>()
+        val pipeline = Pipeline<T>()
         pipelines[key] = pipeline
         return pipeline
     }

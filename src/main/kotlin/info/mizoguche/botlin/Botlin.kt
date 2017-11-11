@@ -11,6 +11,8 @@ import info.mizoguche.botlin.storage.Storable
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 
+class BotEngineException(message: String) : Exception(message)
+
 class Botlin(private var storage: BotStorage = MemoryStorage()) : Storable by storage {
     private var engine: BotEngine? = null
     val pipelines = Pipelines()
@@ -43,7 +45,7 @@ class Botlin(private var storage: BotStorage = MemoryStorage()) : Storable by st
     fun start() {
         try {
             if (engine == null) {
-                throw Exception("No engine is installed")
+                throw BotEngineException("No engine is installed")
             }
 
             launch {
