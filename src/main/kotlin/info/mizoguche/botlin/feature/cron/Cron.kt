@@ -143,7 +143,7 @@ class Cron(configuration: Configuration) : BotFeature {
     }
 
     class Configuration {
-        var scheduler: CronScheduler = Cron4jScheduler()
+        var scheduler: CronScheduler = CronforjScheduler()
     }
 
     companion object Factory : BotFeatureFactory<Configuration> {

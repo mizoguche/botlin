@@ -8,7 +8,7 @@ interface CronScheduler {
     fun isStarted(scheduleId: Int): Boolean
 }
 
-class Cron4jScheduler : CronScheduler {
+class CronforjScheduler : CronScheduler {
     private val startedSchedules = mutableMapOf<Int, Scheduler>()
 
     override fun start(schedule: Schedule, action: () -> Unit) {

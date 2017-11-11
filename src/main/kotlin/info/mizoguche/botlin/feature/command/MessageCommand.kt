@@ -1,7 +1,6 @@
 package info.mizoguche.botlin.feature.command
 
 import info.mizoguche.botlin.BotMessage
-import info.mizoguche.botlin.Pipelines
 import info.mizoguche.botlin.feature.BotFeature
 import info.mizoguche.botlin.feature.BotFeatureContext
 import info.mizoguche.botlin.feature.BotFeatureFactory
