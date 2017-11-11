@@ -18,6 +18,7 @@ class BotFeatureContext(private val featureId: BotFeatureId, private val botlin:
 
 interface BotFeature {
     val id: BotFeatureId
+    val requiredFeatures: Set<BotFeatureId>
     fun install(context: BotFeatureContext)
 }
 

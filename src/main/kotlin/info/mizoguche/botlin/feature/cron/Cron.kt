@@ -8,8 +8,6 @@ import info.mizoguche.botlin.feature.BotFeatureContext
 import info.mizoguche.botlin.feature.BotFeatureFactory
 import info.mizoguche.botlin.feature.BotFeatureId
 import info.mizoguche.botlin.feature.command.BotMessageCommand
-import it.sauronsoftware.cron4j.Scheduler
-import java.util.Random
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -32,11 +30,13 @@ private val addCommandPattern = Pattern.compile("add \"(.+? .+? .+? .+? .+?)\" (
 private val removeCommandPattern = Pattern.compile("remove (\\d+?)")
 
 class Cron(configuration: Configuration) : BotFeature {
+    override val requiredFeatures: Set<BotFeatureId>
+        get() = setOf(BotFeatureId("MessageCommand"))
     private val scheduler = configuration.scheduler
     private val gson = Gson()
 
     override val id: BotFeatureId
-        get() = BotFeatureId("cron")
+        get() = BotFeatureId("Cron")
 
     override fun install(context: BotFeatureContext) {
         context.pipelines[BotMessageCommand::class].intercept {

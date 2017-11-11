@@ -50,7 +50,7 @@ class BotSlackMessage(override val engineId: BotEngineId, private val slackSessi
 
 class SlackEngine(configuration: Configuration) : BotEngine {
     override val id: BotEngineId
-        get() = BotEngineId("slack")
+        get() = BotEngineId("Slack")
 
     private var session = SlackSessionFactory.createWebSocketSlackSession(configuration.token)
 

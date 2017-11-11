@@ -28,7 +28,10 @@ data class BotMessageCommandImpl(override val message: BotMessage) : BotMessageC
 
 class MessageCommand : BotFeature {
     override val id: BotFeatureId
-        get() = BotFeatureId("command")
+        get() = BotFeatureId("MessageCommand")
+
+    override val requiredFeatures: Set<BotFeatureId>
+        get() = setOf()
 
     override fun install(context: BotFeatureContext) {
         context.pipelines[BotMessage::class].intercept {

@@ -8,7 +8,10 @@ import info.mizoguche.botlin.feature.command.BotMessageCommand
 
 class Echo : BotFeature {
     override val id: BotFeatureId
-        get() = BotFeatureId("echo")
+        get() = BotFeatureId("Echo")
+
+    override val requiredFeatures: Set<BotFeatureId>
+        get() = setOf(BotFeatureId("MessageCommand"))
 
     override fun install(context: BotFeatureContext) {
         context.pipelines[BotMessageCommand::class].intercept {
