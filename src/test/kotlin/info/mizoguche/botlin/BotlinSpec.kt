@@ -50,7 +50,7 @@ class BotlinSpec : Spek({
                 }
 
                 val message = spyk<BotMessage>()
-                factory.instance.post(message)
+                factory.engine.post(message)
 
                 verify { runnable.run() }
             }

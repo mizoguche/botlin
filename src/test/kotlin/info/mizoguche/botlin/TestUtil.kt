@@ -30,9 +30,9 @@ class MockEngine : BotEngine {
 }
 
 class MockEngineFactory : BotEngineFactory<Unit> {
-    val instance = MockEngine()
+    val engine = MockEngine()
 
     override fun create(configure: Unit.() -> Unit): BotEngine {
-        return instance
+        return engine
     }
 }
