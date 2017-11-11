@@ -21,10 +21,8 @@ class MemoryStorage : BotStorage {
         return map[id]
     }
 
-    class Configuration
-
-    companion object Factory : BotStorageFactory<Configuration> {
-        override fun create(configure: Configuration.() -> Unit): BotStorage {
+    companion object Factory : BotStorageFactory<Unit> {
+        override fun create(configure: Unit.() -> Unit): BotStorage {
             return MemoryStorage()
         }
     }
