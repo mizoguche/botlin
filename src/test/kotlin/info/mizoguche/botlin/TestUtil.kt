@@ -32,10 +32,10 @@ fun createMockCommand(command: String, args: String, message: BotMessage): BotMe
 class MockEngine : BotEngine {
     override val id: BotEngineId
         get() = BotEngineId("mock")
-    var pipelines: Pipelines? = null
+    var botPipelines: BotPipelines? = null
 
-    suspend override fun start(pipelines: Pipelines) {
-        this.pipelines = pipelines
+    suspend override fun start(botPipelines: BotPipelines) {
+        this.botPipelines = botPipelines
     }
 
     override fun stop() {
@@ -43,7 +43,7 @@ class MockEngine : BotEngine {
 
     inline fun <reified T : Any> post(message: T) {
         runBlocking {
-            pipelines?.get(T::class)!!.execute(message)
+            botPipelines?.get(T::class)!!.execute(message)
             delay(300)
         }
     }

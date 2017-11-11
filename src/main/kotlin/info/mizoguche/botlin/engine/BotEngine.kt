@@ -1,12 +1,12 @@
 package info.mizoguche.botlin.engine
 
-import info.mizoguche.botlin.Pipelines
+import info.mizoguche.botlin.BotPipelines
 
 data class BotEngineId(val value: String)
 
 interface BotEngine {
     val id: BotEngineId
-    suspend fun start(pipelines: Pipelines)
+    suspend fun start(botPipelines: BotPipelines)
     fun stop()
 }
 

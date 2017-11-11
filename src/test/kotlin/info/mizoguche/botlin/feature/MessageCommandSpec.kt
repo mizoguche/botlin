@@ -2,7 +2,7 @@ package info.mizoguche.botlin.feature
 
 import info.mizoguche.botlin.BotMessage
 import info.mizoguche.botlin.MockEngineFactory
-import info.mizoguche.botlin.PipelineInterceptor
+import info.mizoguche.botlin.BotPipelineInterceptor
 import info.mizoguche.botlin.feature.command.BotMessageCommand
 import info.mizoguche.botlin.feature.command.MessageCommand
 import info.mizoguche.botlin.startBotlin
@@ -26,7 +26,7 @@ class MessageCommandSpec : Spek({
                 every { message.isMention } returns true
 
                 var result: BotMessageCommand? = null
-                val interceptor: PipelineInterceptor<BotMessageCommand> = { result = it }
+                val interceptor: BotPipelineInterceptor<BotMessageCommand> = { result = it }
 
                 val engineFactory = MockEngineFactory()
                 startBotlin {

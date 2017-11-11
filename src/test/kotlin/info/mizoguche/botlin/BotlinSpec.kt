@@ -44,7 +44,7 @@ class BotlinSpec : Spek({
     describe("Botlin#intercept")
     {
         val runnable = mockk<Runnable>()
-        val interceptor: MessageInterceptor = { runnable.run() }
+        val interceptor: BotPipelineInterceptor<BotMessage> = { runnable.run() }
         every { runnable.run() } returns Unit
 
         on("intercept") {

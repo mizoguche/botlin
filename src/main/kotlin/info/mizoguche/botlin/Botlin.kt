@@ -16,7 +16,7 @@ class BotFeatureException(message: String) : Exception(message)
 
 class Botlin(var storage: BotStorage = MemoryStorage()) {
     private var engine: BotEngine? = null
-    val pipelines = Pipelines()
+    val pipelines = BotPipelines()
     private val installedFeatureIds = mutableSetOf<BotFeatureId>()
 
     fun <TConf, TFactory : BotFeatureFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotFeature {
@@ -44,7 +44,7 @@ class Botlin(var storage: BotStorage = MemoryStorage()) {
         return storage
     }
 
-    inline fun <reified T : Any> intercept(noinline interceptor: PipelineInterceptor<T>) {
+    inline fun <reified T : Any> intercept(noinline interceptor: BotPipelineInterceptor<T>) {
         pipelines[T::class].intercept(interceptor)
     }
 

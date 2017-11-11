@@ -7,18 +7,18 @@ import org.jetbrains.spek.api.dsl.on
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class PipelinesSpec : Spek({
-    describe("Pipelines#get") {
+class BotPipelinesSpec : Spek({
+    describe("BotPipelines#get") {
         on("get pipeline") {
             it("should return pipeline") {
-                val pipelines = Pipelines()
+                val pipelines = BotPipelines()
                 assertNotNull(pipelines[BotMessage::class])
             }
         }
 
         on("get pipeline multiple times") {
             it("should return same pipeline") {
-                val pipelines = Pipelines()
+                val pipelines = BotPipelines()
                 val pipeline = pipelines[BotMessage::class]
                 assertEquals(pipeline, pipelines[BotMessage::class])
             }

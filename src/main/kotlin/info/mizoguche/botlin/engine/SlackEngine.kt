@@ -9,7 +9,7 @@ import info.mizoguche.botlin.BotMessage
 import info.mizoguche.botlin.BotMessageRequest
 import info.mizoguche.botlin.BotMessageSender
 import info.mizoguche.botlin.BotMessageSession
-import info.mizoguche.botlin.Pipelines
+import info.mizoguche.botlin.BotPipelines
 import kotlinx.coroutines.experimental.launch
 
 class BotSlackMessageSender(private val user: SlackUser) : BotMessageSender {
@@ -54,13 +54,13 @@ class SlackEngine(configuration: Configuration) : BotEngine {
 
     private var session = SlackSessionFactory.createWebSocketSlackSession(configuration.token)
 
-    suspend override fun start(pipelines: Pipelines) {
+    suspend override fun start(botPipelines: BotPipelines) {
         session.connect()
         session.addMessagePostedListener { event, sess ->
-            launch { pipelines[BotMessage::class].execute(BotSlackMessage(id, sess, event)) }
+            launch { botPipelines[BotMessage::class].execute(BotSlackMessage(id, sess, event)) }
         }
 
-        pipelines[BotMessageRequest::class].intercept {
+        botPipelines[BotMessageRequest::class].intercept {
             if (it.engineId != id) {
                 return@intercept
             }
