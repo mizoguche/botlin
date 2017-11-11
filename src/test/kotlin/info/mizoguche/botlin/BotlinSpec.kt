@@ -69,7 +69,7 @@ class BotlinSpec : Spek({
 
         on("install") {
             it("should send message to interceptor of installed feature") {
-                startBotlin {
+                botlin {
                     install(MockEngineFactory())
                     install(featureFactory)
                 }
@@ -91,7 +91,7 @@ class BotlinSpec : Spek({
 
         on("install") {
             it("should start storage") {
-                startBotlin {
+                botlin {
                     install(MockEngineFactory())
                     install(storageFactory)
                 }
