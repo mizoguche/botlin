@@ -2,6 +2,7 @@ package info.mizoguche.botlin
 
 import info.mizoguche.botlin.engine.BotEngine
 import info.mizoguche.botlin.engine.BotEngineFactory
+import info.mizoguche.botlin.engine.BotEngineId
 import info.mizoguche.botlin.feature.command.BotMessageCommand
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
@@ -29,6 +30,8 @@ fun createMockCommand(command: String, args: String, message: BotMessage): BotMe
 }
 
 class MockEngine : BotEngine {
+    override val id: BotEngineId
+        get() = BotEngineId("mock")
     var pipelines: Pipelines? = null
 
     suspend override fun start(pipelines: Pipelines) {
