@@ -18,7 +18,7 @@ dependencies {
     testRuntime 'org.jetbrains.spek:spek-junit-platform-engine:1.1.5'
     testRuntime 'org.junit.platform:junit-platform-runner:1.0.0'
 
-    compile "org.jetbrains.kotlin:kotlin-reflect"
+    testCompile "org.jetbrains.kotlin:kotlin-reflect"
     testCompile "org.jetbrains.kotlin:kotlin-test"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit"
     testCompile "io.mockk:mockk:1.3"
