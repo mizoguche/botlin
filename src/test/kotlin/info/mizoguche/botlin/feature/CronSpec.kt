@@ -22,11 +22,7 @@ class CronSpec : Spek({
         on("add schedule") {
             xit("should call CronScheduler.add") {
                 val message = mockk<BotMessage>()
-                val command = createMockCommand(
-                        command = "cron",
-                        args = """add "* * * * *" @botlin echo test""",
-                        message = message
-                )
+                val command = createMockCommand("""cron add "* * * * *" echo test""")
                 every { message.reply(any()) } returns Unit
                 every { message.channelId } returns "test"
                 val session = mockk<BotMessageSession>()

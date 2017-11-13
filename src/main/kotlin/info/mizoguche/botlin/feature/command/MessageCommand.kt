@@ -1,26 +1,23 @@
 package info.mizoguche.botlin.feature.command
 
 import info.mizoguche.botlin.BotMessage
+import info.mizoguche.botlin.engine.BotEngineId
 import info.mizoguche.botlin.feature.BotFeature
 import info.mizoguche.botlin.feature.BotFeatureContext
 import info.mizoguche.botlin.feature.BotFeatureFactory
 import info.mizoguche.botlin.feature.BotFeatureId
 
-interface BotMessageCommand {
-    val command: String
-    val args: String
-    val message: BotMessage
-}
+data class BotMessageCommand(val engineId: BotEngineId, val channelId: String, private val wholeCommand: String) {
+    constructor(message: BotMessage) : this(message.engineId, message.channelId, message.message)
 
-data class BotMessageCommandImpl(override val message: BotMessage) : BotMessageCommand {
-    override val command: String = if (message.message.indexOf(" ") > -1) {
-        message.message.split(" ")[0]
+    val command: String = if (wholeCommand.indexOf(" ") > -1) {
+        wholeCommand.split(" ")[0]
     } else {
-        message.message
+        wholeCommand
     }
 
-    override val args = if (message.message.indexOf(" ") > -1) {
-        message.message.replace("$command ", "")
+    val args = if (wholeCommand.indexOf(" ") > -1) {
+        wholeCommand.replace("$command ", "")
     } else {
         ""
     }
@@ -36,7 +33,7 @@ class MessageCommand : BotFeature {
     override fun install(context: BotFeatureContext) {
         context.pipelines[BotMessage::class].intercept {
             if (it.isMention) {
-                val command = BotMessageCommandImpl(it)
+                val command = BotMessageCommand(it)
                 context.pipelines[BotMessageCommand::class].execute(command)
             }
         }

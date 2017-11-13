@@ -1,5 +1,6 @@
 package info.mizoguche.botlin.feature.echo
 
+import info.mizoguche.botlin.BotMessageRequest
 import info.mizoguche.botlin.feature.BotFeature
 import info.mizoguche.botlin.feature.BotFeatureContext
 import info.mizoguche.botlin.feature.BotFeatureFactory
@@ -16,7 +17,8 @@ class Echo : BotFeature {
     override fun install(context: BotFeatureContext) {
         context.pipelines[BotMessageCommand::class].intercept {
             if (it.command == "echo") {
-                it.message.reply(it.args)
+                val request = BotMessageRequest(it.engineId, it.channelId, it.args)
+                context.pipelines[BotMessageRequest::class].execute(request)
             }
         }
     }

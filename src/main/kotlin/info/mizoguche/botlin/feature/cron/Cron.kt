@@ -11,9 +11,14 @@ import info.mizoguche.botlin.feature.command.BotMessageCommand
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-data class Schedule(val id: Int, val engineId: String, val channelId: String, val cron: String, val content: String) {
+data class Schedule(val id: Int, private val engineId: String, private val channelId: String, val cron: String, private val command: String) {
     override fun toString(): String {
-        return "${id.toString().padStart(4, ' ')}: \"$cron\" $content"
+        return "${id.toString().padStart(4, ' ')}: \"$cron\" $command"
+    }
+
+    fun start(context: BotFeatureContext) {
+        val com = BotMessageCommand(BotEngineId(engineId), channelId, command)
+        context.pipelines[BotMessageCommand::class].execute(com)
     }
 }
 
@@ -28,6 +33,12 @@ data class Schedules(val schedules: MutableList<Schedule>) {
 
 private val addCommandPattern = Pattern.compile("add \"(.+? .+? .+? .+? .+?)\" (.+)")
 private val removeCommandPattern = Pattern.compile("remove (\\d+?)")
+
+private fun BotFeatureContext.post(engineId: BotEngineId, channelId: String, message: String) {
+    val request = BotMessageRequest(engineId, channelId, message)
+    pipelines[BotMessageRequest::class].execute(request)
+
+}
 
 class Cron(configuration: Configuration) : BotFeature {
     override val requiredFeatures: Set<BotFeatureId>
@@ -46,7 +57,7 @@ class Cron(configuration: Configuration) : BotFeature {
 
             if (it.args == "list") {
                 val schedules = currentSchedules(context)
-                it.message.reply(schedules.toString())
+                context.post(it.engineId, it.channelId, schedules.toString())
                 return@intercept
             }
 
@@ -61,15 +72,12 @@ class Cron(configuration: Configuration) : BotFeature {
                 return@intercept
             }
 
-            it.message.reply("error: invalid args: ${it.args}. confirm cron tab.")
+            context.post(it.engineId, it.channelId, "error: invalid args: ${it.args}. confirm cron tab.")
         }
 
         val schedules = currentSchedules(context)
-        schedules.schedules.forEach {
-            scheduler.start(it) {
-                val request = BotMessageRequest(BotEngineId(it.engineId), it.channelId, it.content)
-                context.pipelines[BotMessageRequest::class].execute(request)
-            }
+        schedules.schedules.forEach { schedule ->
+            scheduler.start(schedule) { schedule.start(context) }
         }
     }
 
@@ -85,16 +93,13 @@ class Cron(configuration: Configuration) : BotFeature {
 
     private fun add(context: BotFeatureContext, matcher: Matcher, command: BotMessageCommand) {
         val cron = matcher.group(1)
-        val content = "${command.message.session.mentionPrefix} ${matcher.group(2)}"
-        val schedule = Schedule(scheduler.createScheduleId(), command.message.engineId.value, command.message.channelId, cron, content)
+        val content = "${matcher.group(2)}"
+        val schedule = Schedule(scheduler.createScheduleId(), command.engineId.value, command.channelId, cron, content)
         val schedules = currentSchedules(context)
         schedules.schedules.add(schedule)
         storeSchedules(context, schedules)
-        scheduler.start(schedule) {
-            val request = BotMessageRequest(command.message.engineId, command.message.channelId, content)
-            context.pipelines[BotMessageRequest::class].execute(request)
-        }
-        command.message.reply("""
+        scheduler.start(schedule) { schedule.start(context) }
+        context.post(command.engineId, command.channelId, """
                     |Created schedule.
                     |
                     |Current schedules:
@@ -109,14 +114,14 @@ class Cron(configuration: Configuration) : BotFeature {
         storeSchedules(context, schedules)
         if (scheduler.isStarted(scheduleId)) {
             scheduler.stop(scheduleId)
-            command.message.reply("""
+            context.post(command.engineId, command.channelId, """
                     |Removed schedule.
                     |
                     |Current schedules:
                     |$schedules
                     """.trimMargin())
         } else {
-            command.message.reply("""
+            context.post(command.engineId, command.channelId, """
                     |Schedule not found.
                     |
                     |Current schedules:

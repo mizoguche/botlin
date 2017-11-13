@@ -18,15 +18,29 @@ fun startBotlin(configure: Botlin.() -> Unit): Botlin {
     return botlin
 }
 
-fun createMockCommand(command: String, args: String, message: BotMessage): BotMessageCommand {
-    return object : BotMessageCommand {
-        override val command: String
-            get() = command
-        override val args: String
-            get() = args
-        override val message: BotMessage
+fun createMockCommandMessage(message: String): BotMessage {
+    return object : BotMessage {
+        override val engineId: BotEngineId
+            get() = BotEngineId("mock")
+        override val channelId: String
+            get() = "test"
+        override val message: String
             get() = message
+        override val rawMessage: String
+            get() = "@botlin $message"
+        override val sender: BotMessageSender
+            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        override val session: BotMessageSession
+            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+        override fun reply(body: String) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
     }
+}
+
+fun createMockCommand(wholeCommand: String): BotMessageCommand {
+    return BotMessageCommand(BotEngineId(""), "", wholeCommand)
 }
 
 class MockEngine : BotEngine {
