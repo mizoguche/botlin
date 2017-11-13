@@ -44,9 +44,14 @@ class BotSlackMessage(override val engineId: BotEngineId, private val slackSessi
         get() = botSession
 
     override fun reply(body: String) {
-        slackSession.sendMessage(event.channel, body)
+        slackSession.sendMessage(event.channel, createSlackMessage(body))
     }
 }
+
+private fun createSlackMessage(message: String) = SlackPreparedMessage.Builder()
+        .withLinkNames(true)
+        .withMessage(message)
+        .build()
 
 class SlackEngine(configuration: Configuration) : BotEngine {
     override val id: BotEngineId
@@ -66,11 +71,7 @@ class SlackEngine(configuration: Configuration) : BotEngine {
             }
 
             val channel = session.findChannelById(it.channelId)
-            val message = SlackPreparedMessage.Builder()
-                    .withLinkNames(true)
-                    .withMessage(it.message)
-                    .build()
-            session.sendMessage(channel, message)
+            session.sendMessage(channel, createSlackMessage(it.message))
         }
     }
 
