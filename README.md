@@ -7,6 +7,9 @@ Botlin
 - Inspired from [Ktor - asynchronous Web framework for Kotlin](http://ktor.io/)
 
 ## Usage
+See [mizoguche/botlin-template](https://github.com/mizoguche/botlin-template) for example.
+
+### Configuration example
 ```kotlin
 fun main(args: Array<String>) {
     botlin {
