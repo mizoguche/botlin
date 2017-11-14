@@ -13,7 +13,7 @@ class BotPipelineContext<out TContext>(private val interceptors: List<BotPipelin
 
 class BotPipeline<TContext> {
     private val contextInterceptors = mutableListOf<BotPipelineInterceptor<TContext>>()
-    val interceptors: List<BotPipelineInterceptor<TContext>>
+    private val interceptors: List<BotPipelineInterceptor<TContext>>
         get() = contextInterceptors
 
     fun intercept(interceptor: BotPipelineInterceptor<TContext>) {

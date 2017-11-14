@@ -31,10 +31,10 @@ class MessageCommand : BotFeature {
         get() = setOf()
 
     override fun install(context: BotFeatureContext) {
-        context.pipelines[BotMessage::class].intercept {
+        context.pipelineOf<BotMessage>().intercept {
             if (it.isMention) {
                 val command = BotMessageCommand(it)
-                context.pipelines[BotMessageCommand::class].execute(command)
+                context.pipelineOf<BotMessageCommand>().execute(command)
             }
         }
     }

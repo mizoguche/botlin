@@ -18,7 +18,7 @@ data class Schedule(val id: Int, private val engineId: String, private val chann
 
     fun start(context: BotFeatureContext) {
         val com = BotMessageCommand(BotEngineId(engineId), channelId, command)
-        context.pipelines[BotMessageCommand::class].execute(com)
+        context.pipelineOf<BotMessageCommand>().execute(com)
     }
 }
 
@@ -36,8 +36,7 @@ private val removeCommandPattern = Pattern.compile("remove (\\d+?)")
 
 private fun BotFeatureContext.post(engineId: BotEngineId, channelId: String, message: String) {
     val request = BotMessageRequest(engineId, channelId, message)
-    pipelines[BotMessageRequest::class].execute(request)
-
+    pipelineOf<BotMessageRequest>().execute(request)
 }
 
 class Cron(configuration: Configuration) : BotFeature {
@@ -50,7 +49,7 @@ class Cron(configuration: Configuration) : BotFeature {
         get() = BotFeatureId("Cron")
 
     override fun install(context: BotFeatureContext) {
-        context.pipelines[BotMessageCommand::class].intercept {
+        context.pipelineOf<BotMessageCommand>().intercept {
             if (it.command != "cron") {
                 return@intercept
             }

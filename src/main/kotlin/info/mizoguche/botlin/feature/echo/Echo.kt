@@ -15,10 +15,10 @@ class Echo : BotFeature {
         get() = setOf(BotFeatureId("MessageCommand"))
 
     override fun install(context: BotFeatureContext) {
-        context.pipelines[BotMessageCommand::class].intercept {
+        context.pipelineOf<BotMessageCommand>().intercept {
             if (it.command == "echo") {
                 val request = BotMessageRequest(it.engineId, it.channelId, it.args)
-                context.pipelines[BotMessageRequest::class].execute(request)
+                context.pipelineOf<BotMessageRequest>().execute(request)
             }
         }
     }

@@ -2,7 +2,11 @@ package info.mizoguche.botlin
 
 import kotlin.reflect.KClass
 
-class BotPipelines(val pipelines: MutableMap<KClass<*>, Any> = mutableMapOf()) {
+class BotPipelines(private val pipelines: MutableMap<KClass<*>, Any> = mutableMapOf()) {
+    inline fun <reified T : Any> pipelineOf(): BotPipeline<T> {
+        return get(T::class)
+    }
+
     operator fun <T : Any> get(key: KClass<T>): BotPipeline<T> {
         if (pipelines.containsKey(key)) {
             @Suppress("UNCHECKED_CAST")
