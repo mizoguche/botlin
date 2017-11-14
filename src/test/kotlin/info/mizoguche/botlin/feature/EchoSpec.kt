@@ -17,7 +17,7 @@ class EchoSpec : Spek({
     describe("Echo#install") {
         on("install") {
             it("should intercept BotMessage") {
-                val command =  createMockCommand("echo body")
+                val command = createMockCommand("echo body")
 
                 var interceptedMessage: BotMessageRequest? = null
                 val interceptor: BotPipelineInterceptor<BotMessageRequest> = { interceptedMessage = it }
