@@ -2,13 +2,14 @@ package info.mizoguche.botlin.storage
 
 import info.mizoguche.botlin.feature.BotFeatureId
 import redis.clients.jedis.Jedis
+import java.net.URI
 
 class RedisStorage(private val configuration: Configuration) : BotStorage {
     private var jedis: Jedis? = null
 
     suspend override fun start() {
         val session = with(configuration) {
-            Jedis(host, port, timeout)
+            Jedis(uri, timeout)
         }
         jedis = session
     }
@@ -26,8 +27,7 @@ class RedisStorage(private val configuration: Configuration) : BotStorage {
     }
 
     class Configuration {
-        var host = ""
-        var port = 6379
+        lateinit var uri: URI
         var timeout = 10000
     }
 
