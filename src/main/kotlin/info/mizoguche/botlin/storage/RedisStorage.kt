@@ -2,16 +2,20 @@ package info.mizoguche.botlin.storage
 
 import info.mizoguche.botlin.feature.BotFeatureId
 import redis.clients.jedis.Jedis
+import redis.clients.jedis.JedisPool
+import redis.clients.jedis.JedisPoolConfig
 import java.net.URI
 
 class RedisStorage(private val configuration: Configuration) : BotStorage {
-    private var jedis: Jedis? = null
+    private var jedisPool: JedisPool? = null
+
+    private val jedis: Jedis?
+        get() = jedisPool?.resource
 
     suspend override fun start() {
-        val session = with(configuration) {
-            Jedis(uri, timeout)
+        jedisPool = with(configuration) {
+            JedisPool(toJedisPoolConfig(), uri, timeout)
         }
-        jedis = session
     }
 
     override fun stop() {
@@ -22,13 +26,28 @@ class RedisStorage(private val configuration: Configuration) : BotStorage {
         jedis?.set(id.value, content)
     }
 
-    override fun get(id: BotFeatureId): String? {
-        return jedis?.get(id.value)
-    }
+    override fun get(id: BotFeatureId): String? = jedis?.get(id.value)
 
     class Configuration {
         lateinit var uri: URI
-        var timeout = 10000
+        var timeout = 600
+        var poolMaxToal = 10
+        var poolMaxIdle = 5
+        var poolMinIdle = 1
+        var poolTestOnBorrow = true
+        var poolTestOnReturn = true
+        var poolTestWhileIdle = true
+
+        fun toJedisPoolConfig(): JedisPoolConfig {
+            return JedisPoolConfig().apply {
+                maxTotal = poolMaxToal
+                maxIdle = poolMaxIdle
+                minIdle = poolMinIdle
+                testOnBorrow = poolTestOnBorrow
+                testOnReturn = poolTestOnReturn
+                testWhileIdle = poolTestWhileIdle
+            }
+        }
     }
 
     companion object Factory : BotStorageFactory<Configuration> {
