@@ -62,10 +62,10 @@ class SlackEngine(configuration: Configuration) : BotEngine {
     suspend override fun start(botPipelines: BotPipelines) {
         session.connect()
         session.addMessagePostedListener { event, sess ->
-            launch { botPipelines[BotMessage::class].execute(BotSlackMessage(id, sess, event)) }
+            launch { botPipelines.pipelineOf<BotMessage>().execute(BotSlackMessage(id, sess, event)) }
         }
 
-        botPipelines[BotMessageRequest::class].intercept {
+        botPipelines.pipelineOf<BotMessageRequest>().intercept {
             if (it.engineId != id) {
                 return@intercept
             }

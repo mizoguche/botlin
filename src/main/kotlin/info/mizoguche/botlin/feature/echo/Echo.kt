@@ -24,8 +24,6 @@ class Echo : BotFeature {
     }
 
     companion object Factory : BotFeatureFactory<Unit> {
-        override fun create(configure: Unit.() -> Unit): Echo {
-            return Echo()
-        }
+        override fun create(configure: Unit.() -> Unit): Echo = Echo()
     }
 }
