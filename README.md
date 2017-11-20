@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
         }
 
         install(RedisStorage) {
-            host = "localhost"
+            uri = URI("redis://localhost:6379")
         }
 
         install(MessageCommand)
@@ -36,11 +36,12 @@ fun main(args: Array<String>) {
 
 ## Description
 ### Goal
-- Easy to use
-    - Readable configuration
-- Easy to extend
-    - You can create your original feature easily
-    - You can adopt new web services as BotEngine easily
+#### Easy to use
+- Readable configuration
+
+#### Easy to extend
+- You can create your original feature easily
+- You can adopt new web services as BotEngine easily
 
 ### Main objects
 - BotEngine
