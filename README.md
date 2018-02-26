@@ -9,6 +9,9 @@ Botlin
 ## Usage
 See [mizoguche/botlin-template](https://github.com/mizoguche/botlin-template) for example.
 
+### Deploy template
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/mizoguche/botlin-template)
+
 ### Configuration example
 ```kotlin
 fun main(args: Array<String>) {
