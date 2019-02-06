@@ -5,7 +5,7 @@ import info.mizoguche.botlin.feature.BotFeatureId
 class MemoryStorage : BotStorage {
     private val map = mutableMapOf<BotFeatureId, String>()
 
-    suspend override fun start() {
+    override suspend fun start() {
         map.clear()
     }
 

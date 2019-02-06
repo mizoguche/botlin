@@ -10,16 +10,18 @@ import info.mizoguche.botlin.feature.command.MessageCommand
 import info.mizoguche.botlin.storage.BotStorage
 import info.mizoguche.botlin.storage.BotStorageFactory
 import info.mizoguche.botlin.storage.MemoryStorage
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class BotEngineException(message: String) : Exception(message)
 class BotFeatureException(message: String) : Exception(message)
 
 private val preinstalledFeatures = listOf(MessageCommand)
 
-class Botlin(var storage: BotStorage = MemoryStorage()) {
+class Botlin(var storage: BotStorage = MemoryStorage(), private val scope: CoroutineScope = GlobalScope) {
     private var engine: BotEngine? = null
-    val pipelines = BotPipelines()
+    val pipelines = BotPipelines(scope)
     private val installedFeatureIds = mutableSetOf<BotFeatureId>()
 
     init {
@@ -38,7 +40,7 @@ class Botlin(var storage: BotStorage = MemoryStorage()) {
     }
 
     fun <TConf, TFactory : BotEngineFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotEngine {
-        val engine = factory.create(configure)
+        val engine = factory.create(scope, configure)
         this.engine = engine
         return engine
     }
@@ -48,7 +50,7 @@ class Botlin(var storage: BotStorage = MemoryStorage()) {
 
         val storage = factory.create(configure)
         this.storage = storage
-        launch { storage.start() }
+        GlobalScope.launch { storage.start() }
         return storage
     }
 
@@ -62,7 +64,7 @@ class Botlin(var storage: BotStorage = MemoryStorage()) {
                 throw BotEngineException("No engine is installed")
             }
 
-            launch { engine?.start(pipelines) }
+            scope.launch { engine?.start(pipelines) }
 
             while (true) {
                 Thread.sleep(1000)

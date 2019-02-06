@@ -6,15 +6,12 @@ import info.mizoguche.botlin.createMockCommandMessage
 import info.mizoguche.botlin.feature.command.BotMessageCommand
 import info.mizoguche.botlin.feature.command.MessageCommand
 import info.mizoguche.botlin.startBotlin
-import io.mockk.junit.MockKJUnit4Runner
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
-import org.junit.runner.RunWith
 import kotlin.test.assertEquals
 
-@RunWith(MockKJUnit4Runner::class)
 class MessageCommandSpec : Spek({
     describe("MessageCommand#install") {
         on("install") {

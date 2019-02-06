@@ -12,7 +12,7 @@ class RedisStorage(private val configuration: Configuration) : BotStorage {
     private val jedis: Jedis?
         get() = jedisPool?.resource
 
-    suspend override fun start() {
+    override suspend fun start() {
         jedisPool = with(configuration) {
             JedisPool(toJedisPoolConfig(), uri, timeout)
         }

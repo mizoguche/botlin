@@ -4,13 +4,15 @@ import info.mizoguche.botlin.engine.BotEngine
 import info.mizoguche.botlin.engine.BotEngineFactory
 import info.mizoguche.botlin.engine.BotEngineId
 import info.mizoguche.botlin.feature.command.BotMessageCommand
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 fun startBotlin(configure: Botlin.() -> Unit): Botlin {
     val botlin = botlin(configure)
-    val job = launch {
+    val job = GlobalScope.launch {
         botlin.start()
     }
     Thread.sleep(400)
@@ -29,12 +31,12 @@ fun createMockCommandMessage(message: String): BotMessage {
         override val rawMessage: String
             get() = "@botlin $message"
         override val sender: BotMessageSender
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+            get() = TODO("not implemented") // To change initializer of created properties use File | Settings | File Templates.
         override val session: BotMessageSession
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+            get() = TODO("not implemented") // To change initializer of created properties use File | Settings | File Templates.
 
         override fun reply(body: String) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
         }
     }
 }
@@ -48,7 +50,7 @@ class MockEngine : BotEngine {
         get() = BotEngineId("mock")
     var botPipelines: BotPipelines? = null
 
-    suspend override fun start(botPipelines: BotPipelines) {
+    override suspend fun start(botPipelines: BotPipelines) {
         this.botPipelines = botPipelines
     }
 
@@ -66,7 +68,7 @@ class MockEngine : BotEngine {
 class MockEngineFactory : BotEngineFactory<Unit> {
     val engine = MockEngine()
 
-    override fun create(configure: Unit.() -> Unit): BotEngine {
+    override fun create(parentScope: CoroutineScope, configure: Unit.() -> Unit): BotEngine {
         return engine
     }
 }

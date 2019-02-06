@@ -1,6 +1,7 @@
 buildscript {
-    ext.botlin_version = '0.3.2'
-    ext.kotlin_version = '1.2.41'
+    ext.botlin_version = '0.3.3'
+    ext.kotlin_version = '1.3.20'
+    ext.coroutines_version = '1.1.1'
 
     repositories {
         mavenCentral()
@@ -56,7 +57,8 @@ sourceSets {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 
     compile 'javax.websocket:javax.websocket-api:1.1'
     compile 'org.glassfish.tyrus.bundles:tyrus-standalone-client:1.13.1'
@@ -66,10 +68,8 @@ dependencies {
 
     compile group: 'it.sauronsoftware.cron4j', name: 'cron4j', version: '2.2.5'
 
-    ktlint 'com.github.shyiko:ktlint:0.8.1'
+    ktlint 'com.github.shyiko:ktlint:0.30.0'
 
-    def coroutines_version = '0.19.1'
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 }
 
 task ktlint(type: JavaExec) {

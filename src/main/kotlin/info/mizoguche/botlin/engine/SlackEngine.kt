@@ -10,7 +10,8 @@ import info.mizoguche.botlin.BotMessageRequest
 import info.mizoguche.botlin.BotMessageSender
 import info.mizoguche.botlin.BotMessageSession
 import info.mizoguche.botlin.BotPipelines
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 class BotSlackMessageSender(private val user: SlackUser) : BotMessageSender {
     override val senderId: String
@@ -53,16 +54,16 @@ private fun createSlackMessage(message: String) = SlackPreparedMessage.Builder()
         .withMessage(message)
         .build()
 
-class SlackEngine(configuration: Configuration) : BotEngine {
+class SlackEngine(private val parentScope: CoroutineScope, configuration: Configuration) : BotEngine {
     override val id: BotEngineId
         get() = BotEngineId("Slack")
 
     private var session = SlackSessionFactory.createWebSocketSlackSession(configuration.token)
 
-    suspend override fun start(botPipelines: BotPipelines) {
+    override suspend fun start(botPipelines: BotPipelines) {
         session.connect()
         session.addMessagePostedListener { event, sess ->
-            launch { botPipelines.pipelineOf<BotMessage>().execute(BotSlackMessage(id, sess, event)) }
+            parentScope.launch { botPipelines.pipelineOf<BotMessage>().execute(BotSlackMessage(id, sess, event)) }
         }
 
         botPipelines.pipelineOf<BotMessageRequest>().intercept {
@@ -84,9 +85,9 @@ class SlackEngine(configuration: Configuration) : BotEngine {
     }
 
     companion object Factory : BotEngineFactory<Configuration> {
-        override fun create(configure: Configuration.() -> Unit): BotEngine {
+        override fun create(parentScope: CoroutineScope, configure: Configuration.() -> Unit): BotEngine {
             val conf = Configuration().apply(configure)
-            return SlackEngine(conf)
+            return SlackEngine(parentScope, conf)
         }
     }
 }

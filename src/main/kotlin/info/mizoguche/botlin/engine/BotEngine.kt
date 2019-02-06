@@ -1,6 +1,7 @@
 package info.mizoguche.botlin.engine
 
 import info.mizoguche.botlin.BotPipelines
+import kotlinx.coroutines.CoroutineScope
 
 data class BotEngineId(val value: String)
 
@@ -11,5 +12,5 @@ interface BotEngine {
 }
 
 interface BotEngineFactory<out C : Any> {
-    fun create(configure: C.() -> Unit = {}): BotEngine
+    fun create(parentScope: CoroutineScope, configure: C.() -> Unit = {}): BotEngine
 }

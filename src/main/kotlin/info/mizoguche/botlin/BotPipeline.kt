@@ -1,7 +1,8 @@
 package info.mizoguche.botlin
 
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 typealias BotPipelineInterceptor<TContext> = suspend (TContext) -> Unit
 
@@ -11,7 +12,7 @@ class BotPipelineContext<out TContext>(private val interceptors: List<BotPipelin
     }
 }
 
-class BotPipeline<TContext> {
+class BotPipeline<TContext>(private val parentScope: CoroutineScope) {
     private val contextInterceptors = mutableListOf<BotPipelineInterceptor<TContext>>()
     private val interceptors: List<BotPipelineInterceptor<TContext>>
         get() = contextInterceptors
@@ -22,6 +23,6 @@ class BotPipeline<TContext> {
 
     fun execute(context: TContext): Job {
         val pipelineContext = BotPipelineContext(interceptors, context)
-        return launch { pipelineContext.proceed() }
+        return parentScope.launch { pipelineContext.proceed() }
     }
 }

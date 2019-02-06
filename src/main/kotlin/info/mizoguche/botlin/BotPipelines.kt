@@ -1,8 +1,12 @@
 package info.mizoguche.botlin
 
+import kotlinx.coroutines.CoroutineScope
 import kotlin.reflect.KClass
 
-class BotPipelines(private val pipelines: MutableMap<KClass<*>, Any> = mutableMapOf()) {
+class BotPipelines(
+    private val parentScope: CoroutineScope,
+    private val pipelines: MutableMap<KClass<*>, Any> = mutableMapOf()
+) {
     inline fun <reified T : Any> pipelineOf(): BotPipeline<T> {
         return get(T::class)
     }
@@ -12,7 +16,7 @@ class BotPipelines(private val pipelines: MutableMap<KClass<*>, Any> = mutableMa
             @Suppress("UNCHECKED_CAST")
             return pipelines[key] as BotPipeline<T>
         }
-        val pipeline = BotPipeline<T>()
+        val pipeline = BotPipeline<T>(parentScope)
         pipelines[key] = pipeline
         return pipeline
     }

@@ -10,7 +10,6 @@ import info.mizoguche.botlin.storage.BotStorageFactory
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
-import io.mockk.junit.MockKJUnit4Runner
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
@@ -19,11 +18,9 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.api.dsl.xdescribe
-import org.junit.runner.RunWith
 
-@RunWith(MockKJUnit4Runner::class)
 class BotlinSpec : Spek({
-    describe("Botlin#install(BotEngine)") {
+    xdescribe("Botlin#install(BotEngine)") {
         val engine = mockk<BotEngine>()
         val engineFactory = spyk<BotEngineFactory<Unit>>()
 
@@ -41,8 +38,7 @@ class BotlinSpec : Spek({
         }
     }
 
-    describe("Botlin#intercept")
-    {
+    xdescribe("Botlin#intercept") {
         val runnable = mockk<Runnable>()
         val interceptor: BotPipelineInterceptor<BotMessage> = { runnable.run() }
         every { runnable.run() } returns Unit
