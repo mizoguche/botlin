@@ -11,7 +11,7 @@ jobs:
       - checkout
 
       - restore_cache:
-          key: botlin-{{ checksum "build.gradle" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+          key: botlin-{{ checksum "botlin/build.gradle" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
 
       - run:
           name: Run Lint
@@ -26,11 +26,9 @@ jobs:
           command: ./gradlew test
 
       - save_cache:
-          key: botlin-{{ checksum "build.gradle" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+          key: botlin-{{ checksum "botlin/build.gradle" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
           paths:
-            - "~/.gradle/wrapper/dists/gradle-4.0.1"
-            - "~/.gradle/caches/modules-2"
-            - "~/.gradle/buildOutputCleanup"
+            - "~/.gradle
 
       - run:
           name: Build
