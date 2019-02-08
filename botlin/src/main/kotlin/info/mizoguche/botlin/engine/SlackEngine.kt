@@ -3,6 +3,7 @@ package info.mizoguche.botlin.engine
 import com.ullink.slack.simpleslackapi.SlackPreparedMessage
 import com.ullink.slack.simpleslackapi.SlackSession
 import com.ullink.slack.simpleslackapi.SlackUser
+import com.ullink.slack.simpleslackapi.events.SlackEvent
 import com.ullink.slack.simpleslackapi.events.SlackMessagePosted
 import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory
 import info.mizoguche.botlin.BotMessage
@@ -64,7 +65,18 @@ class SlackEngine(private val parentScope: CoroutineScope, configuration: Config
         session.connect()
         session.addMessagePostedListener { event, sess ->
             parentScope.launch { botPipelines.pipelineOf<BotMessage>().execute(BotSlackMessage(id, sess, event)) }
+            parentScope.launch { botPipelines.pipelineOf<SlackEvent>().execute(event) }
         }
+        session.addChannelCreatedListener { event, _ ->
+            parentScope.launch { botPipelines.pipelineOf<SlackEvent>().execute(event) }
+        }
+        session.addMessageDeletedListener { event, _ ->
+            parentScope.launch { botPipelines.pipelineOf<SlackEvent>().execute(event) }
+        }
+        session.addMessageUpdatedListener { event, _ ->
+            parentScope.launch { botPipelines.pipelineOf<SlackEvent>().execute(event) }
+        }
+
 
         botPipelines.pipelineOf<BotMessageRequest>().intercept {
             if (it.engineId != id) {
