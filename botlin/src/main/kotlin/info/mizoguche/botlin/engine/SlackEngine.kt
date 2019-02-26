@@ -30,7 +30,11 @@ class BotSlackSession(private val slackSession: SlackSession) : BotMessageSessio
         get() = slackSession.sessionPersona().userName
 }
 
-class BotSlackMessage(override val engineId: BotEngineId, private val slackSession: SlackSession, private val event: SlackMessagePosted) : BotMessage {
+class BotSlackMessage(
+    override val engineId: BotEngineId,
+    private val slackSession: SlackSession,
+    private val event: SlackMessagePosted
+) : BotMessage {
     private val messageSender = BotSlackMessageSender(event.sender)
     private val botSession = BotSlackSession(slackSession)
 
@@ -51,11 +55,12 @@ class BotSlackMessage(override val engineId: BotEngineId, private val slackSessi
 }
 
 private fun createSlackMessage(message: String) = SlackPreparedMessage.Builder()
-        .withLinkNames(true)
-        .withMessage(message)
-        .build()
+    .withLinkNames(true)
+    .withMessage(message)
+    .build()
 
-class SlackEngine(private val parentScope: CoroutineScope, configuration: Configuration) : BotEngine {
+class SlackEngine(private val parentScope: CoroutineScope, configuration: Configuration) :
+    BotEngine {
     override val id: BotEngineId
         get() = BotEngineId("Slack")
 
@@ -64,7 +69,9 @@ class SlackEngine(private val parentScope: CoroutineScope, configuration: Config
     override suspend fun start(botPipelines: BotPipelines) {
         session.connect()
         session.addMessagePostedListener { event, sess ->
-            parentScope.launch { botPipelines.pipelineOf<BotMessage>().execute(BotSlackMessage(id, sess, event)) }
+            parentScope.launch {
+                botPipelines.pipelineOf<BotMessage>().execute(BotSlackMessage(id, sess, event))
+            }
             parentScope.launch { botPipelines.pipelineOf<SlackEvent>().execute(event) }
         }
         session.addChannelCreatedListener { event, _ ->
@@ -97,7 +104,10 @@ class SlackEngine(private val parentScope: CoroutineScope, configuration: Config
     }
 
     companion object Factory : BotEngineFactory<Configuration> {
-        override fun create(parentScope: CoroutineScope, configure: Configuration.() -> Unit): BotEngine {
+        override fun create(
+            parentScope: CoroutineScope,
+            configure: Configuration.() -> Unit
+        ): BotEngine {
             val conf = Configuration().apply(configure)
             return SlackEngine(parentScope, conf)
         }

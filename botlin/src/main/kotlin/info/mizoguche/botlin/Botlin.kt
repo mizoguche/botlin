@@ -19,7 +19,10 @@ class BotFeatureException(message: String) : Exception(message)
 
 private val preinstalledFeatures = listOf(MessageCommand)
 
-class Botlin(var storage: BotStorage = MemoryStorage(), private val scope: CoroutineScope = GlobalScope) {
+class Botlin(
+    var storage: BotStorage = MemoryStorage(),
+    private val scope: CoroutineScope = GlobalScope
+) {
     private var engine: BotEngine? = null
     val pipelines = BotPipelines(scope)
     private val installedFeatureIds = mutableSetOf<BotFeatureId>()
@@ -28,7 +31,10 @@ class Botlin(var storage: BotStorage = MemoryStorage(), private val scope: Corou
         preinstalledFeatures.forEach { install(it) }
     }
 
-    fun <TConf, TFactory : BotFeatureFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotFeature {
+    fun <TConf, TFactory : BotFeatureFactory<TConf>> install(
+        factory: TFactory,
+        configure: TConf.() -> Unit = {}
+    ): BotFeature {
         val feature = factory.create(configure)
         if (!installedFeatureIds.containsAll(feature.requiredFeatures)) {
             throw BotFeatureException("Required feature is not installed yet: ${feature.requiredFeatures.joinToString { it.value }}")
@@ -39,13 +45,19 @@ class Botlin(var storage: BotStorage = MemoryStorage(), private val scope: Corou
         return feature
     }
 
-    fun <TConf, TFactory : BotEngineFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotEngine {
+    fun <TConf, TFactory : BotEngineFactory<TConf>> install(
+        factory: TFactory,
+        configure: TConf.() -> Unit = {}
+    ): BotEngine {
         val engine = factory.create(scope, configure)
         this.engine = engine
         return engine
     }
 
-    fun <TConf, TFactory : BotStorageFactory<TConf>> install(factory: TFactory, configure: TConf.() -> Unit = {}): BotStorage {
+    fun <TConf, TFactory : BotStorageFactory<TConf>> install(
+        factory: TFactory,
+        configure: TConf.() -> Unit = {}
+    ): BotStorage {
         this.storage.stop()
 
         val storage = factory.create(configure)

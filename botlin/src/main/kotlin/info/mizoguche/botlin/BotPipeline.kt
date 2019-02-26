@@ -6,7 +6,10 @@ import kotlinx.coroutines.launch
 
 typealias BotPipelineInterceptor<TContext> = suspend (TContext) -> Unit
 
-class BotPipelineContext<out TContext>(private val interceptors: List<BotPipelineInterceptor<TContext>>, val message: TContext) {
+class BotPipelineContext<out TContext>(
+    private val interceptors: List<BotPipelineInterceptor<TContext>>,
+    val message: TContext
+) {
     suspend fun proceed() {
         interceptors.forEach { it.invoke(message) }
     }

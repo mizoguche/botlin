@@ -11,7 +11,13 @@ import info.mizoguche.botlin.feature.command.BotMessageCommand
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-data class Schedule(val id: Int, private val engineId: String, private val channelId: String, val cron: String, private val command: String) {
+data class Schedule(
+    val id: Int,
+    private val engineId: String,
+    private val channelId: String,
+    val cron: String,
+    private val command: String
+) {
     override fun toString(): String {
         return "${id.toString().padStart(4, ' ')}: \"$cron\" $command"
     }
@@ -71,7 +77,11 @@ class Cron(configuration: Configuration) : BotFeature {
                 return@intercept
             }
 
-            context.post(it.engineId, it.channelId, "error: invalid args: ${it.args}. confirm cron tab.")
+            context.post(
+                it.engineId,
+                it.channelId,
+                "error: invalid args: ${it.args}. confirm cron tab."
+            )
         }
 
         val schedules = currentSchedules(context)
@@ -93,17 +103,25 @@ class Cron(configuration: Configuration) : BotFeature {
     private fun add(context: BotFeatureContext, matcher: Matcher, command: BotMessageCommand) {
         val cron = matcher.group(1)
         val content = "${matcher.group(2)}"
-        val schedule = Schedule(scheduler.createScheduleId(), command.engineId.value, command.channelId, cron, content)
+        val schedule = Schedule(
+            scheduler.createScheduleId(),
+            command.engineId.value,
+            command.channelId,
+            cron,
+            content
+        )
         val schedules = currentSchedules(context)
         schedules.schedules.add(schedule)
         storeSchedules(context, schedules)
         scheduler.start(schedule) { schedule.start(context) }
-        context.post(command.engineId, command.channelId, """
+        context.post(
+            command.engineId, command.channelId, """
                     |Created schedule.
                     |
                     |Current schedules:
                     |$schedules
-                    """.trimMargin())
+                    """.trimMargin()
+        )
     }
 
     private fun remove(context: BotFeatureContext, matcher: Matcher, command: BotMessageCommand) {
@@ -113,19 +131,23 @@ class Cron(configuration: Configuration) : BotFeature {
         storeSchedules(context, schedules)
         if (scheduler.isStarted(scheduleId)) {
             scheduler.stop(scheduleId)
-            context.post(command.engineId, command.channelId, """
+            context.post(
+                command.engineId, command.channelId, """
                     |Removed schedule.
                     |
                     |Current schedules:
                     |$schedules
-                    """.trimMargin())
+                    """.trimMargin()
+            )
         } else {
-            context.post(command.engineId, command.channelId, """
+            context.post(
+                command.engineId, command.channelId, """
                     |Schedule not found.
                     |
                     |Current schedules:
                     |$schedules
-                    """.trimMargin())
+                    """.trimMargin()
+            )
         }
     }
 

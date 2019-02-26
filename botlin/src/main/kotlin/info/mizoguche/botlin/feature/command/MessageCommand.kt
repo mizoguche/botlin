@@ -7,7 +7,11 @@ import info.mizoguche.botlin.feature.BotFeatureContext
 import info.mizoguche.botlin.feature.BotFeatureFactory
 import info.mizoguche.botlin.feature.BotFeatureId
 
-data class BotMessageCommand(val engineId: BotEngineId, val channelId: String, private val wholeCommand: String) {
+data class BotMessageCommand(
+    val engineId: BotEngineId,
+    val channelId: String,
+    private val wholeCommand: String
+) {
     constructor(message: BotMessage) : this(message.engineId, message.channelId, message.message)
 
     val command: String = if (wholeCommand.indexOf(" ") > -1) {

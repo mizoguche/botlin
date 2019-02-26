@@ -20,7 +20,8 @@ class EchoSpec : Spek({
                 val command = createMockCommand("echo body")
 
                 var interceptedMessage: BotMessageRequest? = null
-                val interceptor: BotPipelineInterceptor<BotMessageRequest> = { interceptedMessage = it }
+                val interceptor: BotPipelineInterceptor<BotMessageRequest> =
+                    { interceptedMessage = it }
 
                 val engineFactory = MockEngineFactory()
                 startBotlin {
