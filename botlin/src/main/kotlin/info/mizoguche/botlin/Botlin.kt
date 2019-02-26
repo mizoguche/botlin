@@ -35,12 +35,16 @@ class Botlin(
         factory: TFactory,
         configure: TConf.() -> Unit = {}
     ): BotFeature {
+        requireNotNull(engine) {
+            throw BotEngineException("No engine is installed")
+        }
+
         val feature = factory.create(configure)
         if (!installedFeatureIds.containsAll(feature.requiredFeatures)) {
             throw BotFeatureException("Required feature is not installed yet: ${feature.requiredFeatures.joinToString { it.value }}")
         }
         installedFeatureIds.add(feature.id)
-        feature.install(BotFeatureContext(feature.id, this))
+        feature.install(BotFeatureContext(feature.id, this, engine!!))
         println("Installed feature: ${feature.id.value}")
         return feature
     }
