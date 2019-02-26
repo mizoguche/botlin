@@ -64,7 +64,7 @@ class SlackEngine(private val parentScope: CoroutineScope, configuration: Config
     override val id: BotEngineId
         get() = BotEngineId("Slack")
 
-    private var session = SlackSessionFactory.createWebSocketSlackSession(configuration.token)
+    val session = SlackSessionFactory.createWebSocketSlackSession(configuration.token)
 
     override suspend fun start(botPipelines: BotPipelines) {
         session.connect()
