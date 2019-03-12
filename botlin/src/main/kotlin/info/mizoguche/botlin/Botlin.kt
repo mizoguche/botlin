@@ -27,10 +27,6 @@ class Botlin(
     val pipelines = BotPipelines(scope)
     private val installedFeatureIds = mutableSetOf<BotFeatureId>()
 
-    init {
-        preinstalledFeatures.forEach { install(it) }
-    }
-
     fun <TConf, TFactory : BotFeatureFactory<TConf>> install(
         factory: TFactory,
         configure: TConf.() -> Unit = {}
@@ -76,6 +72,8 @@ class Botlin(
 
     fun start() {
         try {
+            preinstalledFeatures.forEach { install(it) }
+
             if (engine == null) {
                 throw BotEngineException("No engine is installed")
             }
