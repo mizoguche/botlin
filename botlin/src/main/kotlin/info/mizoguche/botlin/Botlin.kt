@@ -6,7 +6,6 @@ import info.mizoguche.botlin.feature.BotFeature
 import info.mizoguche.botlin.feature.BotFeatureContext
 import info.mizoguche.botlin.feature.BotFeatureFactory
 import info.mizoguche.botlin.feature.BotFeatureId
-import info.mizoguche.botlin.feature.command.MessageCommand
 import info.mizoguche.botlin.storage.BotStorage
 import info.mizoguche.botlin.storage.BotStorageFactory
 import info.mizoguche.botlin.storage.MemoryStorage
@@ -16,8 +15,6 @@ import kotlinx.coroutines.launch
 
 class BotEngineException(message: String) : Exception(message)
 class BotFeatureException(message: String) : Exception(message)
-
-private val preinstalledFeatures = listOf(MessageCommand)
 
 class Botlin(
     var storage: BotStorage = MemoryStorage(),
@@ -72,8 +69,6 @@ class Botlin(
 
     fun start() {
         try {
-            preinstalledFeatures.forEach { install(it) }
-
             if (engine == null) {
                 throw BotEngineException("No engine is installed")
             }
