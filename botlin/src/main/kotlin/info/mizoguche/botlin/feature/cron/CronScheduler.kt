@@ -10,7 +10,7 @@ interface CronScheduler {
     fun createScheduleId(): Int
 }
 
-private val maxSchedules = 10000
+private const val maxSchedules = 10000
 
 class CronforjScheduler : CronScheduler {
     private val random: Random = Random()
@@ -34,7 +34,7 @@ class CronforjScheduler : CronScheduler {
             schedule(schedule.cron, action)
         }
         scheduler.start()
-        startedSchedules.put(schedule.id, scheduler)
+        startedSchedules[schedule.id] = scheduler
     }
 
     override fun stop(scheduleId: Int) {

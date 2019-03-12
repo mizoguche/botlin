@@ -37,8 +37,8 @@ data class Schedules(val schedules: MutableList<Schedule>) {
     }
 }
 
-private val addCommandPattern = Pattern.compile("add \"(.+? .+? .+? .+? .+?)\" (.+)")
-private val removeCommandPattern = Pattern.compile("remove (\\d+?)")
+private val addCommandPattern = Pattern.compile("""add "(.+? .+? .+? .+? .+?)" ([\s\S]+)""")
+private val removeCommandPattern = Pattern.compile("""remove (\d+?)""")
 
 private fun BotFeatureContext.post(engineId: BotEngineId, channelId: String, message: String) {
     val request = BotMessageRequest(engineId, channelId, message)
@@ -102,7 +102,7 @@ class Cron(configuration: Configuration) : BotFeature {
 
     private fun add(context: BotFeatureContext, matcher: Matcher, command: BotMessageCommand) {
         val cron = matcher.group(1)
-        val content = "${matcher.group(2)}"
+        val content = matcher.group(2)
         val schedule = Schedule(
             scheduler.createScheduleId(),
             command.engineId.value,
